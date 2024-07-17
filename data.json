@@ -1,0 +1,259 @@
+{
+  "accountId": "team_GngBm2B20mqN7Ye6oFbBMwaC",
+  "analytics": {
+    "id": "Pf0zkdIfEBNGYjmtK8T9VaSSiOy",
+    "enabledAt": 1673908166833,
+    "disabledAt": 1689058566986,
+    "canceledAt": 1690874718000,
+    "paidAt": 1676466707000
+  },
+  "speedInsights": {
+    "id": "Pf0zkdIfEBNGYjmtK8T9VaSSiOy",
+    "enabledAt": 1673908166833,
+    "disabledAt": 1689058566986,
+    "canceledAt": 1690874718000,
+    "paidAt": 1676466707000,
+    "hasData": false
+  },
+  "autoExposeSystemEnvs": true,
+  "autoAssignCustomDomains": true,
+  "autoAssignCustomDomainsUpdatedBy": "system",
+  "buildCommand": "pnpm build",
+  "commandForIgnoringBuildStep": "npx turbo-ignore",
+  "createdAt": 1673717207272,
+  "devCommand": null,
+  "directoryListing": false,
+  "framework": "nextjs",
+  "gitForkProtection": true,
+  "id": "prj_6fwlKBrplUlH0n7QHHHlBkeLLIXf",
+  "installCommand": null,
+  "lastRollbackTarget": null,
+  "lastAliasRequest": null,
+  "name": "jeanscentre",
+  "nodeVersion": "18.x",
+  "outputDirectory": null,
+  "passwordProtection": null,
+  "publicSource": null,
+  "rootDirectory": "applications/jeanscentre",
+  "serverlessFunctionRegion": "fra1",
+  "sourceFilesOutsideRootDirectory": true,
+  "updatedAt": 1721176077786,
+  "live": false,
+  "webAnalytics": {
+    "id": "4fcLB9HekixCm12USH2X7rMiT",
+    "enabledAt": 1680617009924,
+    "hasData": true,
+    "disabledAt": 1684603295774,
+    "canceledAt": 1684603295774
+  },
+  "link": {
+    "type": "github",
+    "repo": "jog-monorepo",
+    "repoId": 596141366,
+    "org": "joggroup",
+    "gitCredentialId": "cred_35be49f0b5dad9090af4485e595090aa4ccd4224",
+    "productionBranch": "release",
+    "createdAt": 1676483249669,
+    "updatedAt": 1676483249669,
+    "deployHooks": [
+      {
+        "createdAt": 1680544861770,
+        "id": "j47Jh3XlCd",
+        "name": "rebuild",
+        "ref": "release",
+        "url": "https://api.vercel.com/v1/integrations/deploy/prj_6fwlKBrplUlH0n7QHHHlBkeLLIXf/j47Jh3XlCd"
+      },
+      {
+        "createdAt": 1689668114215,
+        "id": "eoyJUyfLn9",
+        "name": "rebuild on main",
+        "ref": "main",
+        "url": "https://api.vercel.com/v1/integrations/deploy/prj_6fwlKBrplUlH0n7QHHHlBkeLLIXf/eoyJUyfLn9"
+      }
+    ]
+  },
+  "latestDeployments": [
+    {
+      "alias": [
+        "www.jeanscentre.nl",
+        "jeanscentre.nl",
+        "jeanscentre-jog.vercel.app",
+        "jeanscentre-git-release-jog.vercel.app"
+      ],
+      "aliasAssigned": 1721176077581,
+      "aliasError": null,
+      "automaticAliases": [
+        "jeanscentre-jog.vercel.app",
+        "jeanscentre-git-release-jog.vercel.app"
+      ],
+      "builds": [],
+      "createdAt": 1721174444901,
+      "createdIn": "sfo1",
+      "creator": {
+        "uid": "x0oHnaBI9ev7pbWvNth9knFw",
+        "email": "lychee@rb2.nl",
+        "username": "lychee-rb2",
+        "githubLogin": "Lychee-rb2"
+      },
+      "deploymentHostname": "jeanscentre-ci4f5rmj6-jog",
+      "forced": true,
+      "id": "dpl_H8BLd8E9k9DybEU9KGVRQtRQsqKc",
+      "meta": {
+        "githubCommitAuthorName": "Lychee-rb2",
+        "githubCommitMessage": "feat(JOGG-1263): Statsig orders-return-2 (#944)\n\n(cherry picked from commit 6efc164c7147dfffda5e2a2dde9bccdb31707419)",
+        "githubCommitOrg": "joggroup",
+        "githubCommitRef": "release",
+        "githubCommitRepo": "jog-monorepo",
+        "githubCommitSha": "f932362f4ad52739d9889fc8cd5dc0cd93eca242",
+        "githubDeployment": "1",
+        "githubOrg": "joggroup",
+        "githubRepo": "jog-monorepo",
+        "githubRepoOwnerType": "Organization",
+        "githubCommitRepoId": "596141366",
+        "githubRepoId": "596141366",
+        "githubRepoVisibility": "private",
+        "githubCommitAuthorLogin": "Lychee-rb2",
+        "deployHookId": "j47Jh3XlCd",
+        "deployHookRef": "release",
+        "deployHookName": "rebuild",
+        "branchAlias": "jeanscentre-git-release-jog.vercel.app"
+      },
+      "monorepoManager": "turbo",
+      "name": "jeanscentre",
+      "plan": "pro",
+      "private": true,
+      "readyState": "READY",
+      "readySubstate": "PROMOTED",
+      "target": "production",
+      "teamId": "team_GngBm2B20mqN7Ye6oFbBMwaC",
+      "type": "LAMBDAS",
+      "url": "jeanscentre-ci4f5rmj6-jog.vercel.app",
+      "userId": "x0oHnaBI9ev7pbWvNth9knFw",
+      "withCache": false,
+      "buildingAt": 1721175075323,
+      "readyAt": 1721176076329,
+      "previewCommentsEnabled": true
+    },
+    {
+      "alias": [
+        "jeanscentre-git-feat-jogg-1070-jog.vercel.app"
+      ],
+      "aliasAssigned": 1721125624751,
+      "aliasError": null,
+      "automaticAliases": [
+        "jeanscentre-git-feat-jogg-1070-jog.vercel.app"
+      ],
+      "builds": [],
+      "createdAt": 1721125081349,
+      "createdIn": "sfo1",
+      "creator": {
+        "uid": "x0oHnaBI9ev7pbWvNth9knFw",
+        "email": "lychee@rb2.nl",
+        "username": "lychee-rb2",
+        "githubLogin": "Lychee-rb2"
+      },
+      "deploymentHostname": "jeanscentre-hq0nv8hs0-jog",
+      "forced": false,
+      "id": "dpl_DqamyYN9USwhvGJnsG56aFuBjCGg",
+      "meta": {
+        "githubCommitAuthorName": "lychee",
+        "githubCommitMessage": "feat: Merge main",
+        "githubCommitOrg": "joggroup",
+        "githubCommitRef": "feat/JOGG-1070",
+        "githubCommitRepo": "jog-monorepo",
+        "githubCommitSha": "78c8619ade141f82ffaf622c6b92e929a9ae5bed",
+        "githubDeployment": "1",
+        "githubOrg": "joggroup",
+        "githubRepo": "jog-monorepo",
+        "githubRepoOwnerType": "Organization",
+        "githubCommitRepoId": "596141366",
+        "githubRepoId": "596141366",
+        "githubRepoVisibility": "private",
+        "githubCommitAuthorLogin": "Lychee-rb2",
+        "githubPrId": "927",
+        "branchAlias": "jeanscentre-git-feat-jogg-1070-jog.vercel.app"
+      },
+      "monorepoManager": "turbo",
+      "name": "jeanscentre",
+      "plan": "pro",
+      "private": true,
+      "readyState": "READY",
+      "readySubstate": "STAGED",
+      "target": null,
+      "teamId": "team_GngBm2B20mqN7Ye6oFbBMwaC",
+      "type": "LAMBDAS",
+      "url": "jeanscentre-hq0nv8hs0-jog.vercel.app",
+      "userId": "x0oHnaBI9ev7pbWvNth9knFw",
+      "withCache": false,
+      "buildingAt": 1721125082784,
+      "readyAt": 1721125623682,
+      "previewCommentsEnabled": true
+    }
+  ],
+  "targets": {
+    "production": {
+      "alias": [
+        "www.jeanscentre.nl",
+        "jeanscentre.nl",
+        "jeanscentre-jog.vercel.app",
+        "jeanscentre-git-release-jog.vercel.app"
+      ],
+      "aliasAssigned": 1721176077581,
+      "aliasError": null,
+      "automaticAliases": [
+        "jeanscentre-jog.vercel.app",
+        "jeanscentre-git-release-jog.vercel.app"
+      ],
+      "builds": [],
+      "createdAt": 1721174444901,
+      "createdIn": "sfo1",
+      "creator": {
+        "uid": "x0oHnaBI9ev7pbWvNth9knFw",
+        "email": "lychee@rb2.nl",
+        "username": "lychee-rb2",
+        "githubLogin": "Lychee-rb2"
+      },
+      "deploymentHostname": "jeanscentre-ci4f5rmj6-jog",
+      "forced": true,
+      "id": "dpl_H8BLd8E9k9DybEU9KGVRQtRQsqKc",
+      "meta": {
+        "githubCommitAuthorName": "Lychee-rb2",
+        "githubCommitMessage": "feat(JOGG-1263): Statsig orders-return-2 (#944)\n\n(cherry picked from commit 6efc164c7147dfffda5e2a2dde9bccdb31707419)",
+        "githubCommitOrg": "joggroup",
+        "githubCommitRef": "release",
+        "githubCommitRepo": "jog-monorepo",
+        "githubCommitSha": "f932362f4ad52739d9889fc8cd5dc0cd93eca242",
+        "githubDeployment": "1",
+        "githubOrg": "joggroup",
+        "githubRepo": "jog-monorepo",
+        "githubRepoOwnerType": "Organization",
+        "githubCommitRepoId": "596141366",
+        "githubRepoId": "596141366",
+        "githubRepoVisibility": "private",
+        "githubCommitAuthorLogin": "Lychee-rb2",
+        "deployHookId": "j47Jh3XlCd",
+        "deployHookRef": "release",
+        "deployHookName": "rebuild",
+        "branchAlias": "jeanscentre-git-release-jog.vercel.app"
+      },
+      "monorepoManager": "turbo",
+      "name": "jeanscentre",
+      "plan": "pro",
+      "private": true,
+      "readyState": "READY",
+      "readySubstate": "PROMOTED",
+      "target": "production",
+      "teamId": "team_GngBm2B20mqN7Ye6oFbBMwaC",
+      "type": "LAMBDAS",
+      "url": "jeanscentre-ci4f5rmj6-jog.vercel.app",
+      "userId": "x0oHnaBI9ev7pbWvNth9knFw",
+      "withCache": false,
+      "buildingAt": 1721175075323,
+      "readyAt": 1721176076329,
+      "previewCommentsEnabled": true
+    }
+  },
+  "transferStartedAt": 1676466689443,
+  "transferCompletedAt": 1676466703265,
+  "transferredFromAccountId": "team_Toh7QDg6LBeE7LPIzxCQDqb0"
+}

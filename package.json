@@ -3,11 +3,12 @@
   "module": "index.ts",
   "type": "module",
   "scripts": {
-    "env": "bun env.ts",
-    "linear": "bun ./src/linear"
+    "postinstall": "bun install.ts",
+    "linear": "bun index.ts -linear",
+    "vercel": "bun index.ts -vercel"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "^1.1.6"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"

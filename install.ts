@@ -1,11 +1,11 @@
-const foo = await Bun.file("./.env").text()
 import dotenv from 'dotenv'
-const env = dotenv.parse(foo)
+const env = await Bun.file("./.env").text()
 const content = `
 declare namespace NodeJS {
   export interface ProcessEnv {
-    ${Object.keys(env).map(key=> `${key}?: string\n`)}
+    ${Object.keys( dotenv.parse(env)).map(key=> `${key}?: string`).join('\n    ')}
   }
 }
 `
 await Bun.write('./global-env.d.ts', content)
+

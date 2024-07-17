@@ -4,7 +4,6 @@ export const cli = (cmd: string) => {
     console.error(cmd)
     throw new Error(proc.stderr.toString())
   }
-  console.log(proc.stdout.toString())
   return proc
 }
 
@@ -16,3 +15,12 @@ export const parseArgv = () =>
     }
     return pre
   }, {})
+
+export const ifArgv = (key: string) => Bun.argv.some(i => i.startsWith(`-${key}`))
+
+export const pbcopy = (data: string) => {
+  const proc =  Bun.spawn(['pbcopy'], {stdin:"pipe"})
+  proc.stdin.write(data);
+  proc.stdin.end();
+  console.log(data)
+}
