@@ -1,5 +1,8 @@
 import dotenv from 'dotenv'
+import { resolve } from 'node:path'
 
+const root = resolve(import.meta.dir, '..')
+const path = (p: string) => resolve(root, p)
 const env = await Bun.file("./.env").text()
 const content = `
 declare namespace NodeJS {
@@ -28,15 +31,18 @@ const installContent = [
   importArr.join('\n'),
   runArr.join('\n'),
 ].join('\n\n')
-await Bun.write('./index.ts', installContent)
 
+await Bun.write('./bin.ts', installContent)
+const binTs = Bun.file('./bin.ts')
+console.log({ binTs })
 if (Bun.env.CLI_NAME) {
-  await Bun.write(`./bin/${Bun.env.CLI_NAME}`, `#!/bin/sh
-exec bun "${import.meta.dirname}/index.ts" "$@"
+  const BIN_PATH = `./bin/${Bun.env.CLI_NAME}`
+  await Bun.write(BIN_PATH, `#!/bin/sh
+exec bun "${path("./bin.ts")}" "$@"
 `)
   const zshrc = await Bun.file(`${Bun.env.HOME}/.zshrc`).text()
   const zshrcContent = zshrc.split('\n')
-  const alias = `alias ${Bun.env.CLI_NAME}="zsh ${import.meta.dirname}/bin/${Bun.env.CLI_NAME}"`
+  const alias = `alias ${Bun.env.CLI_NAME}="zsh ${path(BIN_PATH)}"`
   if (zshrcContent.some(i => i === alias)) {
     console.log(`zshrc already has ${alias}", skip add`)
   } else {

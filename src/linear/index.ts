@@ -35,3 +35,10 @@ export const main = async () => {
   cli(`git checkout -b ${branchName}`)
 }
 
+
+if (import.meta.path === Bun.main) {
+  main()
+  // this script is being directly executed
+} else {
+  // this file is being imported from another script
+}
