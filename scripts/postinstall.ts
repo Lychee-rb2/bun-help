@@ -33,8 +33,7 @@ const installContent = [
 ].join('\n\n')
 
 await Bun.write('./bin.ts', installContent)
-const binTs = Bun.file('./bin.ts')
-console.log({ binTs })
+
 if (Bun.env.CLI_NAME) {
   const BIN_PATH = `./bin/${Bun.env.CLI_NAME}`
   await Bun.write(BIN_PATH, `#!/bin/sh
@@ -49,5 +48,7 @@ exec bun "${path("./bin.ts")}" "$@"
     await Bun.write(`${Bun.env.HOME}/.zshrc`, `${zshrc}\n${alias}`)
     console.log(`zshrc add "${alias}", use "source ${Bun.env.HOME}/.zshrc"`)
   }
+} else {
+  console.log("You can add CLI_NAME into your env and run postinstall again to use alias")
 }
 
