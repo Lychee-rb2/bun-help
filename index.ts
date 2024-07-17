@@ -1,7 +1,7 @@
 import { ifArgv } from 'help/io.ts'
 
-import { main as linear } from '@/src/linear'
-import { main as vercel } from '@/src/vercel'
+import { main as linear, argv as linearArgv } from '@/src/linear'
+import { main as vercel, argv as vercelArgv } from '@/src/vercel'
 
-ifArgv('linear') && linear()
-ifArgv('vercel') && vercel()
+ifArgv(linearArgv) && linear()
+ifArgv(vercelArgv) && vercel()

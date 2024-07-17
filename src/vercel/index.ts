@@ -2,6 +2,7 @@ import { configDotenv } from 'dotenv';
 import { cli, ifArgv, pbcopy } from 'help/io.ts'
 import { resolve } from 'path'
 
+export const argv = 'vercel'
 export const main = async () => {
   configDotenv({ path: resolve(__dirname, "../../.env"), });
   const preview = ifArgv('-p')

@@ -14,14 +14,12 @@ const glob = new Bun.Glob("./src/*/index.ts");
 const head = `import { ifArgv } from 'help/io.ts'`
 const importArr: string[] = []
 const runArr: string[] = []
-const scripts: Record<string, string> = {}
 for await (const file of glob.scan(".")) {
   const matcher = file.match(/\.\/src\/(.+)\/index\.ts/)
   const module = matcher?.at(1)
   if (module) {
-    importArr.push(`import { main as ${module} } from '@/src/${module}'`)
-    runArr.push(`ifArgv('${module}') && ${module}()`)
-    scripts[module] = `bun index.ts -${module}`
+    importArr.push(`import { main as ${module}, argv as ${module}Argv } from '@/src/${module}'`)
+    runArr.push(`ifArgv(${module}Argv) && ${module}()`)
   }
 }
 

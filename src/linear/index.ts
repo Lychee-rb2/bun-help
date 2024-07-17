@@ -3,6 +3,7 @@ import { cli, parseArgv } from 'help/io.ts'
 import { configDotenv } from 'dotenv'
 import { resolve } from 'path'
 
+export const argv = 'linear'
 export const main = async () => {
   configDotenv({ path: resolve(__dirname, "../../.env"), });
   const argv = parseArgv()
