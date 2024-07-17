@@ -1,0 +1,20 @@
+{
+  "name": "bun",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "env": "bun env.ts",
+    "linear": "bun ./src/linear"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@linear/sdk": "^24.0.0",
+    "@types/dotenv": "^8.2.0",
+    "dotenv": "^16.4.5"
+  }
+}
