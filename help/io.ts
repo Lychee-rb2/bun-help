@@ -16,10 +16,10 @@ export const parseArgv = () =>
     return pre
   }, {})
 
-export const ifArgv = (key: string) => Bun.argv.some(i => i.startsWith(`-${key}`))
+export const ifArgv = (key: string) => Bun.argv.some(i => i === key)
 
 export const pbcopy = (data: string) => {
-  const proc =  Bun.spawn(['pbcopy'], {stdin:"pipe"})
+  const proc = Bun.spawn(['pbcopy'], { stdin: "pipe" })
   proc.stdin.write(data);
   proc.stdin.end();
   console.log(data)

@@ -3,9 +3,7 @@
   "module": "index.ts",
   "type": "module",
   "scripts": {
-    "postinstall": "bun install.ts",
-    "linear": "bun index.ts -linear",
-    "vercel": "bun index.ts -vercel"
+    "postinstall": "bun install.ts"
   },
   "devDependencies": {
     "@types/bun": "^1.1.6"

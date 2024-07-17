@@ -1,7 +1,10 @@
+import { configDotenv } from 'dotenv';
 import { cli, ifArgv, pbcopy } from 'help/io.ts'
+import { resolve } from 'path'
 
-export const main = async ()=>{
-  const preview = ifArgv('p')
+export const main = async () => {
+  configDotenv({ path: resolve(__dirname, "../../.env"), });
+  const preview = ifArgv('-p')
   const team = Bun.env.VERCEL_TEAM
   const template = (branch: string, names: string[]) => names.map(name => `${name.replace(/-/g, ' ')}: https://${name}-git-${branch}-${team}.vercel.app`).join('\n')
   if (preview) {

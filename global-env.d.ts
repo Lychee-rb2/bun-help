@@ -1,6 +1,7 @@
 
 declare namespace NodeJS {
   export interface ProcessEnv {
+    CLI_NAME?: string
     LINEAR_PERSONAL_API_KEY?: string
     LINEAR_TEAM?: string
     VERCEL_TEAM?: string

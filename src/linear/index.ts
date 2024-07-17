@@ -1,7 +1,10 @@
 import { LinearClient } from '@linear/sdk'
 import { cli, parseArgv } from 'help/io.ts'
+import { configDotenv } from 'dotenv'
+import { resolve } from 'path'
 
 export const main = async () => {
+  configDotenv({ path: resolve(__dirname, "../../.env"), });
   const argv = parseArgv()
   const number = +(argv.i)
   const _team = argv.t
@@ -12,9 +15,7 @@ export const main = async () => {
   const client = new LinearClient({ apiKey: Bun.env.LINEAR_PERSONAL_API_KEY })
 
   const issue = await client.issues({
-    filter: {
-      team: { name: { eq: team } }, number: { eq: number }
-    }
+    filter: { team: { name: { eq: team } }, number: { eq: number } }
   }).then(res => res.nodes.at(0))
   if (!issue) {
     throw new Error(`Not found issue ${number} from ${team}`)
