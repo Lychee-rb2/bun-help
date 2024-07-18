@@ -1,7 +1,5 @@
-import { ifArgv } from 'help/io.ts'
+import { createLogger, main } from 'help'
 
-import { main as linear, argv as linearArgv } from '@/src/linear'
-import { main as vercel, argv as vercelArgv } from '@/src/vercel'
+createLogger()
 
-ifArgv(linearArgv) && linear()
-ifArgv(vercelArgv) && vercel()
+main(import.meta)

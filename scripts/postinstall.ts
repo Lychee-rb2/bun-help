@@ -13,27 +13,6 @@ declare namespace NodeJS {
 `
 await Bun.write('./global-env.d.ts', content)
 
-const glob = new Bun.Glob("./src/*/index.ts");
-const head = `import { ifArgv } from 'help/io.ts'`
-const importArr: string[] = []
-const runArr: string[] = []
-for await (const file of glob.scan(".")) {
-  const matcher = file.match(/\.\/src\/(.+)\/index\.ts/)
-  const module = matcher?.at(1)
-  if (module) {
-    importArr.push(`import { main as ${module}, argv as ${module}Argv } from '@/src/${module}'`)
-    runArr.push(`ifArgv(${module}Argv) && ${module}()`)
-  }
-}
-
-const installContent = [
-  head,
-  importArr.join('\n'),
-  runArr.join('\n'),
-].join('\n\n')
-
-await Bun.write('./bin.ts', installContent)
-
 if (Bun.env.CLI_NAME) {
   const BIN_PATH = `./bin/${Bun.env.CLI_NAME}`
   await Bun.write(BIN_PATH, `#!/bin/sh
@@ -49,6 +28,6 @@ exec bun "${path("./bin.ts")}" "$@"
     console.log(`zshrc add "${alias}", use "source ${Bun.env.HOME}/.zshrc"`)
   }
 } else {
-  console.log("You can add CLI_NAME into your env and run postinstall again to use alias")
+  console.log("You can add CLI_NAME into your env and run `postinstall` again to use alias")
 }
 
