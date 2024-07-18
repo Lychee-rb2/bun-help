@@ -15,7 +15,7 @@ await Bun.write('./global-env.d.ts', content)
 
 if (Bun.env.ZSH) {
   if (Bun.env.CLI_NAME) {
-    const BIN_PATH = `./bin/${Bun.env.CLI_NAME}`
+    const BIN_PATH = `./bin/bun-help`
     await Bun.write(BIN_PATH, `#!/bin/sh
 exec bun "${path("./bin.ts")}" "$@"
 `)
@@ -32,6 +32,6 @@ exec bun "${path("./bin.ts")}" "$@"
     console.log("You can add CLI_NAME into your env and run `postinstall` again to use alias")
   }
 } else {
-  console.log("We only support ZSH now.")
+  console.log("CLI only support ZSH now.")
 }
 
