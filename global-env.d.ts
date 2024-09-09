@@ -4,8 +4,13 @@ declare namespace NodeJS {
     CLI_NAME?: string
     LINEAR_PERSONAL_API_KEY?: string
     LINEAR_TEAM?: string
+    LINEAR_SPACE?: string
     VERCEL_TEAM?: string
     VERCEL_PROJECT?: string
     VERCEL_PERSONAL_TOKEN?: string
+    NOTION_TOKEN?: string
+    PRISMIC_DOMAIN?: string
+    PRISMIC_TOKEN?: string
+    TEMP_FOLDER?: string
   }
 }

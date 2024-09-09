@@ -1,5 +1,6 @@
 import { logger } from 'help'
 import dotenv from 'dotenv'
+import { resolve } from 'node:path';
 
 export const cli = (cmd: string) => {
   const proc = Bun.spawnSync(cmd.split(' '));
@@ -50,4 +51,10 @@ export const main = async (meta: ImportMeta) => {
   } else {
     logger.error(`Does not find "${actionName.join(' ')}"`)
   }
+}
+
+export const tempFile = async (fileName: string, content: string) => {
+  const file = resolve(Bun.env.TEMP_FOLDER!, fileName)
+  await Bun.write(file, content)
+  return file
 }
