@@ -54,7 +54,7 @@ export const main = async (meta: ImportMeta) => {
 }
 
 export const tempFile = async (fileName: string, content: string) => {
-  const file = resolve(Bun.env.TEMP_FOLDER!, fileName)
+  const file = resolve(Bun.env.TEMP_FOLDER || `/tmp`, fileName)
   await Bun.write(file, content)
   return file
 }
