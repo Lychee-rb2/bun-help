@@ -8,9 +8,6 @@ declare namespace NodeJS {
     VERCEL_TEAM?: string
     VERCEL_PROJECT?: string
     VERCEL_PERSONAL_TOKEN?: string
-    NOTION_TOKEN?: string
-    PRISMIC_DOMAIN?: string
-    PRISMIC_TOKEN?: string
     TEMP_FOLDER?: string
   }
 }
