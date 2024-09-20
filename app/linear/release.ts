@@ -25,12 +25,13 @@ export default async function () {
     target: argv.t || "release",
     main: argv.m || "main"
   })
+  cli('git pull')
   const behind = cli(`git log --oneline --graph --abbrev-commit ${target}..${main} --no-decorate`).stdout.toString().split('\n').filter(Boolean).map(i => i.slice(11))
   const ahead = cli(`git log --oneline --graph --abbrev-commit ${main}..${target} --no-decorate`).stdout.toString().split('\n').filter(Boolean).map(i => i.slice(11))
   ahead.forEach(title => {
     const index = behind.findIndex(v => title === v)
     if (index === -1) {
-      throw Error(`${title} is not in ${main}`)
+      // throw Error(`${title} is not in ${main}`)
     } else {
       behind.splice(index, 1)
     }

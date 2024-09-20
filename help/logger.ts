@@ -6,9 +6,7 @@ export const createLogger = () => {
   if (logger) return logger
   logger = pino({
     level: logLevel,
-    transport: {
-      target: 'pino-pretty'
-    },
+    transport: { targets: [{ target: 'pino-pretty' }] },
   })
   return logger
 }

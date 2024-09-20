@@ -9,7 +9,7 @@ export const findNextBranch = async (branch: string, version = 1): Promise<strin
 
 export const getBranch = () => {
   const argv = parseArgv()
-  if (argv.b) return argv.b
+  if (argv.b) return Promise.resolve(argv.b)
   const proc = cli(`git branch --show-current`);
-  return new Response(proc.stdout).text().then(t => t.trim().replace(/\//g, "-").replace(/_/g, ""));
+  return new Response(proc.stdout).text().then(t => t.trim());
 }

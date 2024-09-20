@@ -1,5 +1,6 @@
 import { getProjects } from '@/fetch/vercel.ts'
-import { z } from '@/help'
+import { cli, z } from '@/help'
+import check from '@/app/vercel/check.ts'
 
 const validate = z.object({ team: z.string() })
 
@@ -11,13 +12,12 @@ export default async function () {
   })).filter(i => i.link))
   for (const project of projects) {
     try {
-      console.log(project.name + " release Start")
-      const res = await fetch(project.link!.url).then(res => res.json())
-      console.log(res)
-      console.log(project.name + " release End")
+      await fetch(project.link!.url).then(res => res.json())
     } catch (e) {
       console.log(e)
       console.log(project.name + " release Fail")
     }
   }
+  const { success } = cli('git checkout release')
+  success && await check()
 }

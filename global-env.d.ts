@@ -8,6 +8,7 @@ declare namespace NodeJS {
     VERCEL_TEAM?: string
     VERCEL_PROJECT?: string
     VERCEL_PERSONAL_TOKEN?: string
-    TEMP_FOLDER?: string
+    GIT_ORGANIZATION?: string
+    GIT_REPO?: string
   }
 }
