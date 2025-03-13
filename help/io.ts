@@ -1,9 +1,10 @@
-import { logger } from 'help'
-import dotenv from 'dotenv'
+import dotenv from 'dotenv';
+import { logger } from 'help';
+import inquirer from 'inquirer';
 import { resolve } from 'node:path';
 
-export const cli = (cmd: string) => {
-  const proc = Bun.spawnSync(cmd.split(' '));
+export const cli = (cmd: string[]) => {
+  const proc = Bun.spawnSync(cmd);
   if (!proc.success) {
     logger.error(cmd)
     throw new Error(proc.stderr.toString())
@@ -46,7 +47,7 @@ export const main = async (meta: ImportMeta) => {
   const action = await _require(actionName);
   if (action.default) {
     logger.debug(`Start run "${actionName.join(' ')}"`)
-    await action.default()
+    await action.default({ from: "cli" })
     logger.debug(`End run "${actionName.join(' ')}"`)
   } else {
     logger.error(`Does not find "${actionName.join(' ')}"`)
@@ -57,4 +58,29 @@ export const tempFile = async (fileName: string, content: string) => {
   const file = resolve(Bun.env.TEMP_FOLDER || `/tmp`, fileName)
   await Bun.write(file, content)
   return file
+}
+
+export const ask = async (question: string) => {
+  const { answer } = await inquirer.prompt([
+    {
+      type: 'confirm',
+      name: 'answer',
+      message: question,
+      default: true
+    }
+  ]);
+  return answer;
+}
+
+export const checkbox = async (question: string, choices: string[]) => {
+  const { answer } = await inquirer.prompt([
+    {
+      type: 'checkbox',
+      name: 'answer',
+      message: question,
+      choices: choices,
+      default: choices
+    }
+  ]);
+  return answer;
 }

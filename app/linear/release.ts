@@ -1,5 +1,5 @@
-import { cli, parseArgv, tempFile, typedBoolean, z, } from '@/help'
 import { getIssues } from '@/fetch/linear.ts'
+import { cli, parseArgv, tempFile, typedBoolean, z, } from '@/help'
 import { Issue } from '@linear/sdk'
 import dayjs from 'dayjs'
 
@@ -13,7 +13,7 @@ const validate = z.object({
 const parsePr = (pr: string) => {
   const matcher = pr.match(/\((#[0-9]*)\)$/)
   if (!matcher) return (`- ${pr}`)
-  return `- [${pr}](https://github.com/${Bun.env.GIT_ORGANIZATION}/${Bun.env.GIT_REPO}/pull/${matcher[1]})`
+  return `- [${pr}](https://github.com/${Bun.env.GIT_ORGANIZATION}/${Bun.env.GIT_REPO}/pull/${matcher[1].replace(/^#/, '')})`
 }
 export default async function () {
   const argv = parseArgv()
@@ -25,9 +25,9 @@ export default async function () {
     target: argv.t || "release",
     main: argv.m || "main"
   })
-  cli('git pull')
-  const behind = cli(`git log --oneline --graph --abbrev-commit ${target}..${main} --no-decorate`).stdout.toString().split('\n').filter(Boolean).map(i => i.slice(11))
-  const ahead = cli(`git log --oneline --graph --abbrev-commit ${main}..${target} --no-decorate`).stdout.toString().split('\n').filter(Boolean).map(i => i.slice(11))
+  cli(['git', 'pull'])
+  const behind = cli(['git', 'log', '--oneline', '--graph', '--abbrev-commit', target, '..', main, '--no-decorate']).stdout.toString().split('\n').filter(Boolean).map(i => i.slice(11).trim())
+  const ahead = cli(['git', 'log', '--oneline', '--graph', '--abbrev-commit', main, '..', target, '--no-decorate']).stdout.toString().split('\n').filter(Boolean).map(i => i.slice(11).trim())
   ahead.forEach(title => {
     const index = behind.findIndex(v => title === v)
     if (index === -1) {
@@ -89,5 +89,5 @@ export default async function () {
     note.push(...[`### Others`, ...others.map(pr => parsePr(pr)), ''])
   }
   const path = await tempFile(`${target}-${main}-${day}.md`, note.join('\n'))
-  cli(`open ${path}`)
+  cli(['open', path])
 }

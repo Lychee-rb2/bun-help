@@ -1,6 +1,6 @@
+import check from '@/app/vercel/check.ts'
 import { getProjects } from '@/fetch/vercel.ts'
 import { cli, z } from '@/help'
-import check from '@/app/vercel/check.ts'
 
 const validate = z.object({ team: z.string() })
 
@@ -18,6 +18,6 @@ export default async function () {
       console.log(project.name + " release Fail")
     }
   }
-  const { success } = cli('git checkout release')
+  const { success } = cli(['git', 'checkout', 'release'])
   success && await check()
 }

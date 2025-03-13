@@ -10,5 +10,10 @@ declare namespace NodeJS {
     VERCEL_PERSONAL_TOKEN?: string
     GIT_ORGANIZATION?: string
     GIT_REPO?: string
+    DNS_ARRRESS?: string
+    DEEPSEEP_URL?: string
+    DEEPSEEP_API?: string
+    MOONSHOT_API?: string
+    MOONSHOT_URL?: string
   }
 }

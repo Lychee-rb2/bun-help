@@ -14,9 +14,12 @@
   "dependencies": {
     "@linear/sdk": "^24.0.0",
     "@types/dotenv": "^8.2.0",
+    "@types/node-notifier": "^8.0.5",
     "dayjs": "^1.11.13",
     "dotenv": "^16.4.5",
+    "inquirer": "^12.4.3",
     "log-update": "^6.1.0",
+    "node-notifier": "^10.0.1",
     "pino": "^9.3.1",
     "pino-pretty": "^11.2.1",
     "zod": "^3.23.8"

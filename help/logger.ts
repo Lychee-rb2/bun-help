@@ -1,4 +1,4 @@
-const logLevel = Bun.env.LOG_LEVEL || "debug"
+const logLevel = Bun.env.LOG_LEVEL || "info"
 import pino, { type BaseLogger } from 'pino'
 
 export let logger: BaseLogger
