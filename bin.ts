@@ -1,5 +1,5 @@
-import { createLogger, main } from 'help'
+import { createLogger, main } from "help";
 
-createLogger()
+createLogger();
 
-main(import.meta)
+main(import.meta);

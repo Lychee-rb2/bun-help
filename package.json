@@ -1,27 +1,160 @@
 {
   "name": "bun",
+  "displayName": "Lychee quick panel",
+  "description": "Quick panel for Lychee",
+  "version": "0.0.1",
+  "publisher": "Lychee",
+  "engines": {
+    "vscode": "^1.93.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "lychee-quick.openIssue",
+        "title": "Open Issue"
+      },
+      {
+        "command": "lychee-quick.checkBranch",
+        "title": "Check Branch",
+        "icon": {
+          "light": "resources/light/git-branch-plus.svg",
+          "dark": "resources/dark/git-branch-plus.svg"
+        }
+      },
+      {
+        "command": "lychee-quick.refreshLinear",
+        "title": "Refresh Linear Issues",
+        "icon": {
+          "light": "resources/light/refresh.svg",
+          "dark": "resources/dark/refresh.svg"
+        }
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "lychee-quick-sidebar",
+          "title": "Lychee Quick",
+          "icon": "party-popper.svg"
+        }
+      ]
+    },
+    "views": {
+      "lychee-quick-sidebar": [
+        {
+          "id": "lychee-quick.view",
+          "name": "Lychee Quick"
+        },
+        {
+          "id": "lychee-quick.linearView",
+          "name": "Linear"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "lychee-quick.refreshLinear",
+          "group": "navigation",
+          "when": "view == lychee-quick.linearView"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "lychee-quick.checkBranch",
+          "when": "view == lychee-quick.linearView && viewItem == lychee-quick.linearViewItem",
+          "group": "inline"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Lychee Quick",
+      "properties": {
+        "lychee-quick.linearApiKey": {
+          "type": "string",
+          "description": "API key for Linear integration"
+        },
+        "lychee-quick.linearTeam": {
+          "type": "string",
+          "description": "Linear group name"
+        },
+        "lychee-quick.linearSpace": {
+          "type": "string",
+          "description": "Linear space name"
+        },
+        "lychee-quick.vercelToken": {
+          "type": "string",
+          "description": "Authentication token for Vercel"
+        },
+        "lychee-quick.vercelProject": {
+          "type": "string",
+          "description": "Vercel project name"
+        },
+        "lychee-quick.vercelTeam": {
+          "type": "string",
+          "description": "Vercel team name"
+        },
+        "lychee-quick.deepseekApi": {
+          "type": "string",
+          "description": "DeepSeek API key"
+        },
+        "lychee-quick.moonshotApi": {
+          "type": "string",
+          "description": "Moonshot API key"
+        }
+      }
+    }
+  },
   "module": "index.ts",
-  "type": "module",
   "scripts": {
-    "postinstall": "bun scripts/postinstall.ts"
+    "postinstall": "bun scripts/postinstall.ts",
+    "vscode:prepublish": "bun run build",
+    "build": "bun esbuild.config.js",
+    "watch": "bun esbuild.config.js --watch",
+    "pretest": "bun run build && bun run lint",
+    "lint": "eslint . --ext ts",
+    "test": "bun run test"
   },
   "devDependencies": {
-    "@types/bun": "^1.1.6"
+    "@types/bun": "^1.1.6",
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "16.x",
+    "@types/vscode": "1.93",
+    "@vscode/test-electron": "^2.3.0",
+    "esbuild": "^0.25.1",
+    "eslint": "9",
+    "glob": "^8.1.0",
+    "mocha": "^10.2.0",
+    "typescript": "^5.0.0"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "@linear/sdk": "^24.0.0",
+    "@eslint/js": "^9.22.0",
+    "@linear/sdk": "^38.0.0",
     "@types/dotenv": "^8.2.0",
     "@types/node-notifier": "^8.0.5",
+    "@typescript-eslint/eslint-plugin": "^8.26.1",
+    "@vscode/vsce": "^3.2.2",
+    "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
     "dotenv": "^16.4.5",
+    "eslint-config-prettier": "^10.1.1",
+    "eslint-plugin-prettier": "^5.2.3",
     "inquirer": "^12.4.3",
     "log-update": "^6.1.0",
     "node-notifier": "^10.0.1",
     "pino": "^9.3.1",
     "pino-pretty": "^11.2.1",
+    "prettier": "^3.5.3",
+    "typescript-eslint": "^8.26.1",
     "zod": "^3.23.8"
   }
 }
