@@ -16,11 +16,17 @@
     "commands": [
       {
         "command": "lychee-quick.openIssue",
+        "when": "view == lychee-quick.linearView && viewItem == lychee-quick.linearViewItem",
+        "icon": {
+          "light": "resources/light/chrome.svg",
+          "dark": "resources/dark/chrome.svg"
+        },
         "title": "Open Issue"
       },
       {
         "command": "lychee-quick.checkBranch",
         "title": "Check Branch",
+        "when": "view == lychee-quick.linearView && viewItem == lychee-quick.linearViewItem",
         "icon": {
           "light": "resources/light/git-branch-plus.svg",
           "dark": "resources/dark/git-branch-plus.svg"
@@ -29,6 +35,7 @@
       {
         "command": "lychee-quick.refreshLinear",
         "title": "Refresh Linear Issues",
+        "when": "view == lychee-quick.linearView",
         "icon": {
           "light": "resources/light/refresh.svg",
           "dark": "resources/dark/refresh.svg"
@@ -47,10 +54,6 @@
     "views": {
       "lychee-quick-sidebar": [
         {
-          "id": "lychee-quick.view",
-          "name": "Lychee Quick"
-        },
-        {
           "id": "lychee-quick.linearView",
           "name": "Linear"
         }
@@ -67,6 +70,11 @@
       "view/item/context": [
         {
           "command": "lychee-quick.checkBranch",
+          "when": "view == lychee-quick.linearView && viewItem == lychee-quick.linearViewItem",
+          "group": "inline"
+        },
+        {
+          "command": "lychee-quick.openIssue",
           "when": "view == lychee-quick.linearView && viewItem == lychee-quick.linearViewItem",
           "group": "inline"
         }
@@ -113,8 +121,8 @@
   "module": "index.ts",
   "scripts": {
     "postinstall": "bun scripts/postinstall.ts",
-    "vscode:prepublish": "bun run build",
-    "build": "bun esbuild.config.js",
+    "vscode:prepublish": "bun run compile",
+    "compile": "bun esbuild.config.js",
     "watch": "bun esbuild.config.js --watch",
     "pretest": "bun run build && bun run lint",
     "lint": "eslint . --ext ts",
@@ -124,7 +132,7 @@
     "@types/bun": "^1.1.6",
     "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.1",
-    "@types/node": "16.x",
+    "@types/node": "20",
     "@types/vscode": "1.93",
     "@vscode/test-electron": "^2.3.0",
     "esbuild": "^0.25.1",
@@ -155,6 +163,7 @@
     "pino-pretty": "^11.2.1",
     "prettier": "^3.5.3",
     "typescript-eslint": "^8.26.1",
+    "vsce": "^2.15.0",
     "zod": "^3.23.8"
   }
 }
