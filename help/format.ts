@@ -17,7 +17,8 @@ export const vercelPreview = (
     .join("\n");
 };
 
-export const ago = (t: number) => {
+export const ago = (t?: number) => {
+  if (!t) return "";
   const now = new Date().getTime();
   const diff = Math.floor((now - t) / 1000);
   const minutes = `${Math.floor(diff / 60)}`.padStart(2, "0");

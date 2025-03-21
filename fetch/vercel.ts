@@ -1,14 +1,35 @@
-const vercelFetch = <T>(uri: string, init?: FetchRequestInit): Promise<T> =>
-  fetch(`https://api.vercel.com${uri}`, {
-    ...init,
-    headers: {
-      Authorization: `Bearer ${Bun.env.VERCEL_PERSONAL_TOKEN}`,
-      ...(init?.headers || {}),
-    },
-  }).then((res) => res.json());
+import { Vercel } from "@vercel/sdk";
 
-export const getProjects = (team: string) =>
-  vercelFetch<ProjectsRes>(`/v9/projects?teamId=${team}`);
+const vercelClient = (token: string) => {
+  const vercel = new Vercel({
+    bearerToken: token,
+  });
+  return vercel;
+};
+export const getProjects = (auth: string, teamId: string) => {
+  return vercelClient(auth).projects.getProjects({ teamId });
+};
 
-export const getDeployments = (team: string, app?: string) =>
-  vercelFetch<DeploymentsRes>(`/v6/deployments?teamId=${team}&app=${app}`);
+export const getDeployments = (auth: string, teamId: string, app?: string) => {
+  return vercelClient(auth).deployments.getDeployments({ teamId, app });
+};
+
+export const getBranch = (
+  auth: string,
+  teamId: string,
+  branch: string,
+  app?: string,
+) => {
+  return vercelClient(auth).deployments.getDeployments({
+    teamId,
+    target: branch,
+    app,
+  });
+};
+
+export const getDomains = (auth: string, teamId: string, app: string) => {
+  return vercelClient(auth).projects.getProjectDomains({
+    idOrName: app,
+    teamId,
+  });
+};

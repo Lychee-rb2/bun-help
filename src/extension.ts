@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { LinearTreeDataProvider } from "./views/linear";
+import { VercelTreeDataProvider } from "./views/vercel";
 
 export function activate(context: vscode.ExtensionContext) {
   // Get configuration
@@ -7,21 +8,22 @@ export function activate(context: vscode.ExtensionContext) {
 
   const linearApiKey = config.get<string>("linearApiKey");
   const linearTeam = config.get<string>("linearTeam");
-  // const linearSpace = config.get<string>("linearSpace");
-  // const vercelToken = config.get<string>("vercelToken");
-  // const vercelProject = config.get<string>("vercelProject");
-  // const vercelTeam = config.get<string>("vercelTeam");
-  // const deepseekApi = config.get<string>("deepseekApi");
-  // const moonshotApi = config.get<string>("moonshotApi");
+
+  const vercelToken = config.get<string>("vercelToken");
+  const vercelTeam = config.get<string>("vercelTeam");
 
   if (linearApiKey && linearTeam) {
-    const linearTreeDataProvider = new LinearTreeDataProvider(
-      linearApiKey,
-      linearTeam,
+    const linearTreeDataProvider = new LinearTreeDataProvider(context);
+    context.subscriptions.push(linearTreeDataProvider.dispose);
+  }
+
+  if (vercelToken && vercelTeam) {
+    const vercelTreeDataProvider = new VercelTreeDataProvider(
+      vercelToken,
+      vercelTeam,
       context.globalState,
     );
-
-    context.subscriptions.push(linearTreeDataProvider.dispose);
+    context.subscriptions.push(vercelTreeDataProvider.dispose);
   }
 }
 

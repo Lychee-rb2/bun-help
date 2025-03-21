@@ -5,8 +5,9 @@ const validate = z.object({ team: z.string() });
 
 export default async function (_?: { from?: string }) {
   const { team } = validate.parse({ team: Bun.env.VERCEL_TEAM });
-  const names = await getProjects(team).then((res) =>
-    res.projects.map((i) => i.name),
+  console.log(Bun.env.VERCEL_PERSONAL_TOKEN);
+  const names = await getProjects(Bun.env.VERCEL_PERSONAL_TOKEN!, team).then(
+    (res) => res.projects.map((i) => i.name),
   );
   const branch = await getBranch().then((t) =>
     t.trim().replace(/\//g, "-").replace(/_/g, ""),

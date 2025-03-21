@@ -1,3 +1,5 @@
+import { buildCommentBody } from "@/src/help/linear-body";
+import type { GithubAttachmentMeta } from "@/types/linear";
 import { LinearClient } from "@linear/sdk";
 export enum PaginationSortOrder {
   Ascending = "Ascending",
@@ -64,4 +66,31 @@ export const getCycleIssues = async ({
       first: 200,
     })
     .then((res) => res.nodes);
+};
+
+export const createPreviewsComment = async ({
+  issueId,
+  apiKey,
+  emails,
+  previews,
+  footer,
+}: {
+  issueId: string;
+  emails: string[];
+  previews: GithubAttachmentMeta["previewLinks"];
+  apiKey: string;
+  footer?: string;
+}) => {
+  const client = new LinearClient({ apiKey });
+  const mensions = await client
+    .users({ filter: { email: { in: emails } } })
+    .then((res) => res.nodes);
+  return await client.createComment({
+    issueId,
+    bodyData: buildCommentBody(
+      mensions.map((i) => ({ id: i.id, label: i.name })),
+      previews,
+      footer,
+    ),
+  });
 };

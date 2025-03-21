@@ -1,5 +1,5 @@
 {
-  "name": "bun",
+  "name": "lychee-quick",
   "displayName": "Lychee quick panel",
   "description": "Quick panel for Lychee",
   "version": "0.0.1",
@@ -11,12 +11,13 @@
     "Other"
   ],
   "activationEvents": [],
+  "repository": "https://github.com/Lychee-rb2/bun-help.git",
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
         "command": "lychee-quick.openIssue",
-        "when": "view == lychee-quick.linearView && viewItem == lychee-quick.linearViewItem",
+        "when": "false",
         "icon": {
           "light": "resources/light/chrome.svg",
           "dark": "resources/dark/chrome.svg"
@@ -26,7 +27,7 @@
       {
         "command": "lychee-quick.checkBranch",
         "title": "Check Branch",
-        "when": "view == lychee-quick.linearView && viewItem == lychee-quick.linearViewItem",
+        "when": "false",
         "icon": {
           "light": "resources/light/git-branch-plus.svg",
           "dark": "resources/dark/git-branch-plus.svg"
@@ -39,6 +40,24 @@
         "icon": {
           "light": "resources/light/refresh.svg",
           "dark": "resources/dark/refresh.svg"
+        }
+      },
+      {
+        "command": "lychee-quick.sendPreview",
+        "title": "Send Preview",
+        "when": "false",
+        "icon": {
+          "light": "resources/light/scan-search.svg",
+          "dark": "resources/dark/scan-search.svg"
+        }
+      },
+      {
+        "command": "lychee-quick.openPullRequest",
+        "title": "Open Pull Request",
+        "when": "false",
+        "icon": {
+          "light": "resources/light/git-pull-request.svg",
+          "dark": "resources/dark/git-pull-request.svg"
         }
       }
     ],
@@ -56,10 +75,28 @@
         {
           "id": "lychee-quick.linearView",
           "name": "Linear"
+        },
+        {
+          "id": "lychee-quick.vercelView",
+          "name": "Vercel"
         }
       ]
     },
     "menus": {
+      "commandPalette": [
+        {
+          "command": "lychee-quick.refreshLinear",
+          "when": "false"
+        },
+        {
+          "command": "lychee-quick.checkBranch",
+          "when": "false"
+        },
+        {
+          "command": "lychee-quick.openIssue",
+          "when": "false"
+        }
+      ],
       "view/title": [
         {
           "command": "lychee-quick.refreshLinear",
@@ -76,6 +113,16 @@
         {
           "command": "lychee-quick.openIssue",
           "when": "view == lychee-quick.linearView && viewItem == lychee-quick.linearViewItem",
+          "group": "inline"
+        },
+        {
+          "command": "lychee-quick.sendPreview",
+          "when": "view == lychee-quick.linearView && viewItem == lychee-quick.linearPullRequestTreeItem",
+          "group": "inline"
+        },
+        {
+          "command": "lychee-quick.openPullRequest",
+          "when": "view == lychee-quick.linearView && viewItem == lychee-quick.linearPullRequestTreeItem",
           "group": "inline"
         }
       ]
@@ -94,6 +141,15 @@
         "lychee-quick.linearSpace": {
           "type": "string",
           "description": "Linear space name"
+        },
+        "lychee-quick.previewsCommentMentions": {
+          "type": "array",
+          "description": "Previews comment mentions emails",
+          "default": []
+        },
+        "lychee-quick.previewsCommentFooter": {
+          "type": "string",
+          "description": "Previews comment footer"
         },
         "lychee-quick.vercelToken": {
           "type": "string",
@@ -150,6 +206,7 @@
     "@types/dotenv": "^8.2.0",
     "@types/node-notifier": "^8.0.5",
     "@typescript-eslint/eslint-plugin": "^8.26.1",
+    "@vercel/sdk": "^1.5.0",
     "@vscode/vsce": "^3.2.2",
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
@@ -164,6 +221,6 @@
     "prettier": "^3.5.3",
     "typescript-eslint": "^8.26.1",
     "vsce": "^2.15.0",
-    "zod": "^3.23.8"
+    "zod": "^3.24.2"
   }
 }
