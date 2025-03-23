@@ -36,8 +36,7 @@
     "outDir": "out",
     "esModuleInterop": true,
     "types": [
-      "vscode",
-      "types/linear"
+      "vscode"
     ]
   },
   "exclude": [
