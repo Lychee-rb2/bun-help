@@ -13,8 +13,8 @@ export function activate(context: vscode.ExtensionContext) {
   const vercelTeam = config.get<string>("vercelTeam");
 
   if (linearApiKey && linearTeam) {
-    const linearTreeDataProvider = new LinearTreeDataProvider(context);
-    context.subscriptions.push(linearTreeDataProvider.dispose);
+    new LinearTreeDataProvider(context);
+    // context.subscriptions.push(linearTreeDataProvider.dispose);
   }
 
   if (vercelToken && vercelTeam) {

@@ -1,6 +1,5 @@
 import { createPreviewsComment, getCycleIssues } from "@/fetch/linear";
 import { type Attachment, type Issue, type WorkflowState } from "@linear/sdk";
-import { format } from "date-fns";
 import * as vscode from "vscode";
 import { z } from "zod";
 import { findNextBranch } from "../help/git";
@@ -12,65 +11,59 @@ interface IssuesCache {
     issue: Issue;
     state: WorkflowState;
     attachments: Attachment[];
+    group: (typeof groups)[number];
   }[];
   t: number;
 }
 
 export class LinearIssuesCache {
   private config = vscode.workspace.getConfiguration("lychee-quick");
-  constructor(public context: vscode.ExtensionContext) {}
-
-  private cacheKey(group: (typeof groups)[number]) {
-    return `linearIssuesCache-${this.config.linearTeam}-${group}`;
+  private cacheKey: string;
+  constructor(public context: vscode.ExtensionContext) {
+    this.cacheKey = `linearIssuesCache-${this.config.linearTeam}`;
   }
 
-  private async fetchLinearIssues(
-    group?: "My Issues" | "Others",
-  ): Promise<IssuesCache["issues"]> {
-    if (!group) {
-      return [];
-    }
-    const issues = await getCycleIssues({
-      team: this.config.linearTeam,
-      apiKey: this.config.linearApiKey,
-      isMe: group === "My Issues",
-    });
-    return Promise.all(
-      issues
-        .filter((i) => i.state)
-        .map(async (issue) => {
-          const state = await issue.state!;
-          const attachments = (
-            await issue.attachments({
-              filter: { sourceType: { eq: "github" } },
-            })
-          ).nodes;
-          return { issue, state, attachments };
+  private async fetchLinearIssues(): Promise<IssuesCache["issues"]> {
+    return (
+      await Promise.all(
+        groups.map(async (group) => {
+          const issues = await getCycleIssues({
+            team: this.config.linearTeam,
+            apiKey: this.config.linearApiKey,
+            isMe: group === "My Issues",
+          });
+          return Promise.all(
+            issues
+              .filter((i) => i.state)
+              .map(async (issue) => {
+                const state = await issue.state!;
+                const attachments = (
+                  await issue.attachments({
+                    filter: { sourceType: { eq: "github" } },
+                  })
+                ).nodes;
+                return { issue, state, attachments, group };
+              }),
+          );
         }),
-    );
+      )
+    ).flat();
   }
-
-  async get(group: (typeof groups)[number]) {
-    const cacheKey = this.cacheKey(group);
-    const cachedData = this.context.globalState.get<IssuesCache>(cacheKey);
+  async getIssue() {
+    const cachedData = this.context.globalState.get<IssuesCache>(this.cacheKey);
     if (cachedData && Date.now() - cachedData.t < 1000 * 60 * 60 * 24) {
       return cachedData;
     }
     const data = {
-      issues: await this.fetchLinearIssues(group),
+      issues: await this.fetchLinearIssues(),
       t: Date.now(),
     } satisfies IssuesCache;
-    await this.context.globalState.update(cacheKey, data);
+    await this.context.globalState.update(this.cacheKey, data);
     return data;
   }
 
-  async clear(group: (typeof groups)[number]) {
-    const cacheKey = this.cacheKey(group);
-    await this.context.globalState.update(cacheKey, undefined);
-  }
-
-  async clearAll() {
-    await Promise.all(groups.map((group) => this.clear(group)));
+  async clear() {
+    await this.context.globalState.update(this.cacheKey, undefined);
   }
 }
 export class LinearPullRequestTreeItem extends vscode.TreeItem {
@@ -87,13 +80,10 @@ export class LinearPullRequestTreeItem extends vscode.TreeItem {
 export class LinearTreeGroup extends vscode.TreeItem {
   constructor(
     public group: (typeof groups)[number],
-    public data: IssuesCache,
+    public data: IssuesCache["issues"],
   ) {
     super(group, vscode.TreeItemCollapsibleState.Expanded);
     this.contextValue = "lychee-quick.linearViewGroup";
-    if (data?.t) {
-      this.tooltip = `Last updated at ${format(data.t, "yyyy-MM-dd HH:mm:ss")}`;
-    }
   }
 }
 
@@ -102,6 +92,7 @@ export class LinearTreeItem extends vscode.TreeItem {
     public issue: Issue,
     public label: string,
     public attachments: Attachment[],
+    public isReleaseCheckboxEnabled: boolean,
   ) {
     super(
       label,
@@ -110,6 +101,9 @@ export class LinearTreeItem extends vscode.TreeItem {
         : vscode.TreeItemCollapsibleState.None,
     );
     this.contextValue = "lychee-quick.linearViewItem";
+    if (isReleaseCheckboxEnabled) {
+      this.checkboxState = vscode.TreeItemCheckboxState.Unchecked;
+    }
   }
 }
 
@@ -128,15 +122,35 @@ export class LinearTreeDataProvider
     LinearTreeItem | LinearTreeGroup | LinearPullRequestTreeItem | undefined
   > = this._onDidChangeTreeData.event;
   private cache: LinearIssuesCache;
-  public dispose: vscode.Disposable;
+  // public dispose: vscode.Disposable;
   private config = vscode.workspace.getConfiguration("lychee-quick");
-
+  private isReleaseCheckboxEnabled = false;
+  private selectedItems: Set<LinearTreeItem> = new Set();
+  private _onDidChangeCheckboxState = new vscode.EventEmitter<
+    vscode.TreeCheckboxChangeEvent<LinearTreeItem>
+  >();
+  readonly onDidChangeCheckboxState = this._onDidChangeCheckboxState.event;
   constructor(context: vscode.ExtensionContext) {
+    this.isReleaseCheckboxEnabled = false;
     this.cache = new LinearIssuesCache(context);
-    this.dispose = vscode.window.registerTreeDataProvider(
-      "lychee-quick.linearView",
-      this,
-    );
+
+    const view = vscode.window.createTreeView("lychee-quick.linearView", {
+      treeDataProvider: this,
+      manageCheckboxStateManually: true,
+    });
+
+    view.onDidChangeCheckboxState((event) => {
+      event.items.forEach(([item, state]) => {
+        if (item instanceof LinearTreeItem) {
+          if (state === vscode.TreeItemCheckboxState.Checked) {
+            this.selectedItems.add(item);
+          } else {
+            this.selectedItems.delete(item);
+          }
+        }
+      });
+    });
+
     vscode.commands.registerCommand(
       "lychee-quick.openIssue",
       (item: LinearTreeItem) => {
@@ -189,6 +203,41 @@ export class LinearTreeDataProvider
         vscode.env.openExternal(vscode.Uri.parse(item.attachment.metadata.url));
       },
     );
+
+    vscode.commands.registerCommand("lychee-quick.releaseIssues", async () => {
+      switch (this.isReleaseCheckboxEnabled) {
+        case true: {
+          this.isReleaseCheckboxEnabled = false;
+          this._onDidChangeTreeData.fire(undefined);
+          const content = [...this.selectedItems]
+            .map((i) => {
+              return {
+                title: i.issue.identifier + " " + i.issue.title,
+                url: i.issue.url,
+                prs: i.attachments.map((a) => ({
+                  title: a.metadata.title,
+                  url: a.metadata.url,
+                })),
+              };
+            })
+            .map((i) => {
+              return [
+                `## [${i.title}](${i.url})`,
+                ...i.prs.map((pr) => `- [${pr.title}](${pr.url})`),
+              ].join("\n");
+            })
+            .join("\n");
+          await vscode.env.clipboard.writeText(content);
+          await vscode.window.showInformationMessage("已复制到剪贴板");
+          this.selectedItems.clear();
+          break;
+        }
+        case false:
+          this.isReleaseCheckboxEnabled = true;
+          this._onDidChangeTreeData.fire(undefined);
+          break;
+      }
+    });
   }
 
   async getTreeItem(
@@ -204,11 +253,12 @@ export class LinearTreeDataProvider
       return [];
     }
     if (!element) {
+      await this.cache.getIssue();
       return Promise.all(groups.map((group) => this.createGroup(group)));
     }
     if (element instanceof LinearTreeGroup) {
       return Promise.all(
-        element.data.issues.map(({ issue, state, attachments }) =>
+        element.data.map(({ issue, state, attachments }) =>
           this.createTreeItem(issue, state, attachments),
         ),
       );
@@ -224,8 +274,11 @@ export class LinearTreeDataProvider
   }
 
   private async createGroup(group: (typeof groups)[number]) {
-    const data = await this.cache.get(group);
-    return new LinearTreeGroup(group, data);
+    const data = await this.cache.getIssue();
+    return new LinearTreeGroup(
+      group,
+      data.issues.filter((i) => i.group === group),
+    );
   }
 
   private async createPullRequest(issue: Issue, attachment: Attachment) {
@@ -249,11 +302,16 @@ export class LinearTreeDataProvider
       completed: "🟢",
     };
     const label = `${map[state?.type ?? "unstarted"]} [${issue.identifier}]${issue.title}`;
-    return new LinearTreeItem(issue, label, attachments);
+    return new LinearTreeItem(
+      issue,
+      label,
+      attachments,
+      this.isReleaseCheckboxEnabled,
+    );
   }
 
   refresh(): void {
-    this.cache.clearAll();
+    this.cache.clear();
     this._onDidChangeTreeData.fire(undefined);
   }
 }

@@ -25,6 +25,14 @@
         "title": "Open Issue"
       },
       {
+        "command": "lychee-quick.releaseIssues",
+        "icon": {
+          "light": "resources/light/chrome.svg",
+          "dark": "resources/dark/chrome.svg"
+        },
+        "title": "Release Issues"
+      },
+      {
         "command": "lychee-quick.checkBranch",
         "title": "Check Branch",
         "when": "false",
@@ -74,7 +82,9 @@
       "lychee-quick-sidebar": [
         {
           "id": "lychee-quick.linearView",
-          "name": "Linear"
+          "name": "Linear",
+          "type": "tree",
+          "checkbox": true
         },
         {
           "id": "lychee-quick.vercelView",
@@ -98,6 +108,11 @@
         }
       ],
       "view/title": [
+        {
+          "command": "lychee-quick.releaseIssues",
+          "group": "navigation",
+          "when": "view == lychee-quick.linearView"
+        },
         {
           "command": "lychee-quick.refreshLinear",
           "group": "navigation",
