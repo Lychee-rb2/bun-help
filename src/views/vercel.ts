@@ -79,7 +79,7 @@ export class VercelTreeDataProvider
     VercelTreeGroup | VercelProjectTreeItem | undefined
   > = this._onDidChangeTreeData.event;
 
-  dispose: vscode.Disposable;
+  // dispose: vscode.Disposable;
   private cache: VercelProjectsCache;
 
   constructor(
@@ -92,10 +92,10 @@ export class VercelTreeDataProvider
       this.vercelTeam,
       this.globalState,
     );
-    this.dispose = vscode.window.registerTreeDataProvider(
-      "lychee-quick.vercelView",
-      this,
-    );
+    // this.dispose = vscode.window.registerTreeDataProvider(
+    //   "lychee-quick.vercelView",
+    //   this,
+    // );
   }
 
   async getTreeItem(element: VercelTreeGroup) {
