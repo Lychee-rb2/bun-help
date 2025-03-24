@@ -198,9 +198,11 @@
     "pretest": "bun run build && bun run lint",
     "lint": "eslint . --ext ts",
     "test": "bun run test",
-    "add-icon": "bun scripts/add-icon.ts"
+    "add-icon": "bun scripts/add-icon.ts",
+    "codegen": "bun scripts/codegen.ts"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^5.0.5",
     "@types/bun": "^1.1.6",
     "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.1",
@@ -218,6 +220,8 @@
   },
   "dependencies": {
     "@eslint/js": "^9.22.0",
+    "@graphql-codegen/typescript-graphql-request": "^6.2.0",
+    "@graphql-codegen/typescript-operations": "^4.5.1",
     "@linear/sdk": "^38.0.0",
     "@types/dotenv": "^8.2.0",
     "@types/node-notifier": "^8.0.5",
@@ -229,6 +233,7 @@
     "dotenv": "^16.4.5",
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-prettier": "^5.2.3",
+    "graphql": "^16.10.0",
     "inquirer": "^12.4.3",
     "log-update": "^6.1.0",
     "node-notifier": "^10.0.1",

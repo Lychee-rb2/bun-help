@@ -1,0 +1,8 @@
+query issues {
+  issues {
+    nodes {
+      id
+      title
+    }
+  }
+}

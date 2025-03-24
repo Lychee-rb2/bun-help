@@ -37,7 +37,7 @@
     "esModuleInterop": true,
     "types": [
       "vscode"
-    ]
+    ],
   },
   "exclude": [
     "node_modules",

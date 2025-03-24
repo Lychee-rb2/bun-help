@@ -1,0 +1,17 @@
+import { generate } from "@graphql-codegen/cli";
+import config from "../graphql.config.json";
+
+const plugins = [
+  "typescript",
+  "typescript-operations",
+  "typescript-graphql-request",
+];
+Object.entries(config.projects).forEach(([key, project]) => {
+  generate({
+    schema: project.schema,
+    documents: project.documents,
+    generates: {
+      [`src/fetch/${key}.gql.ts`]: { plugins },
+    },
+  });
+});

@@ -1,0 +1,8 @@
+{
+    "projects": {
+        "linear": {
+            "schema": "graphql/linear/schema.graphql",
+            "documents": "graphql/linear/gql/*.graphql"
+        }
+    }
+}
