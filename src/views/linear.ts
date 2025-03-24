@@ -1,5 +1,6 @@
 import { createPreviewsComment, getCycleIssues } from "@/fetch/linear";
 import { type Attachment, type Issue, type WorkflowState } from "@linear/sdk";
+import { format } from "date-fns";
 import * as vscode from "vscode";
 import { z } from "zod";
 import { findNextBranch } from "../help/git";
@@ -209,24 +210,26 @@ export class LinearTreeDataProvider
         case true: {
           this.isReleaseCheckboxEnabled = false;
           this._onDidChangeTreeData.fire(undefined);
-          const content = [...this.selectedItems]
-            .map((i) => {
-              return {
-                title: i.issue.identifier + " " + i.issue.title,
-                url: i.issue.url,
-                prs: i.attachments.map((a) => ({
-                  title: a.metadata.title,
-                  url: a.metadata.url,
-                })),
-              };
-            })
-            .map((i) => {
-              return [
-                `## [${i.title}](${i.url})`,
-                ...i.prs.map((pr) => `- [${pr.title}](${pr.url})`),
-              ].join("\n");
-            })
-            .join("\n");
+          const content =
+            `# Release note: ${format(new Date(), "yyyy-MM-dd")}` +
+            [...this.selectedItems]
+              .map((i) => {
+                return {
+                  title: i.issue.identifier + " " + i.issue.title,
+                  url: i.issue.url,
+                  prs: i.attachments.map((a) => ({
+                    title: a.metadata.title,
+                    url: a.metadata.url,
+                  })),
+                };
+              })
+              .map((i) =>
+                [
+                  `## [${i.title}](${i.url})`,
+                  ...i.prs.map((pr) => `- [${pr.title}](${pr.url})`),
+                ].join("\n"),
+              )
+              .join("\n");
           await vscode.env.clipboard.writeText(content);
           await vscode.window.showInformationMessage("已复制到剪贴板");
           this.selectedItems.clear();

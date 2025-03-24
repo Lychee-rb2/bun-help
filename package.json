@@ -27,8 +27,8 @@
       {
         "command": "lychee-quick.releaseIssues",
         "icon": {
-          "light": "resources/light/chrome.svg",
-          "dark": "resources/dark/chrome.svg"
+          "light": "resources/light/rocket.svg",
+          "dark": "resources/dark/rocket.svg"
         },
         "title": "Release Issues"
       },
@@ -197,7 +197,8 @@
     "watch": "bun esbuild.config.js --watch",
     "pretest": "bun run build && bun run lint",
     "lint": "eslint . --ext ts",
-    "test": "bun run test"
+    "test": "bun run test",
+    "add-icon": "bun scripts/add-icon.ts"
   },
   "devDependencies": {
     "@types/bun": "^1.1.6",
