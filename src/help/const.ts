@@ -1,0 +1,5 @@
+export const extension = "lychee-quick";
+export const LINEAR_VIEW = "linear-view";
+
+export const treeId = (view: typeof LINEAR_VIEW, name: string) =>
+  `${extension}.${view}.${name}`;

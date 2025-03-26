@@ -1,0 +1,8 @@
+query users($filter: UserFilter) {
+  users(filter: $filter) {
+    nodes {
+      id
+      name
+    }
+  }
+}

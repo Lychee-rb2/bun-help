@@ -1,4 +1,4 @@
-interface GithubAttachmentMeta {
+export interface GithubAttachmentMeta {
   id: string;
   url: string;
   draft: boolean;
@@ -39,11 +39,4 @@ interface GithubAttachmentMeta {
     };
   }[];
   targetBranch: string;
-}
-import "@linear/sdk";
-
-declare module "@linear/sdk" {
-  class Attachment {
-    metadata: GithubAttachmentMeta;
-  }
 }

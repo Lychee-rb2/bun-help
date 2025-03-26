@@ -16,57 +16,38 @@
   "contributes": {
     "commands": [
       {
-        "command": "lychee-quick.openIssue",
+        "command": "lychee-quick.linear-view.open-issue",
         "when": "false",
-        "icon": {
-          "light": "resources/light/chrome.svg",
-          "dark": "resources/dark/chrome.svg"
-        },
+        "icon": "$(link-external)",
         "title": "Open Issue"
       },
       {
-        "command": "lychee-quick.releaseIssues",
-        "icon": {
-          "light": "resources/light/rocket.svg",
-          "dark": "resources/dark/rocket.svg"
-        },
+        "command": "lychee-quick.linear-view.release-issues",
+        "icon": "$(rocket)",
         "title": "Release Issues"
       },
       {
-        "command": "lychee-quick.checkBranch",
+        "command": "lychee-quick.linear-view.check-branch",
         "title": "Check Branch",
         "when": "false",
-        "icon": {
-          "light": "resources/light/git-branch-plus.svg",
-          "dark": "resources/dark/git-branch-plus.svg"
-        }
+        "icon": "$(git-branch-create)"
       },
       {
-        "command": "lychee-quick.refreshLinear",
+        "command": "lychee-quick.linear-view.refresh",
         "title": "Refresh Linear Issues",
-        "when": "view == lychee-quick.linearView",
-        "icon": {
-          "light": "resources/light/refresh.svg",
-          "dark": "resources/dark/refresh.svg"
-        }
+        "icon": "$(refresh)"
       },
       {
-        "command": "lychee-quick.sendPreview",
+        "command": "lychee-quick.linear-view.send-preview",
         "title": "Send Preview",
         "when": "false",
-        "icon": {
-          "light": "resources/light/scan-search.svg",
-          "dark": "resources/dark/scan-search.svg"
-        }
+        "icon": "$(send)"
       },
       {
-        "command": "lychee-quick.openPullRequest",
+        "command": "lychee-quick.linear-view.open-pull-request",
         "title": "Open Pull Request",
         "when": "false",
-        "icon": {
-          "light": "resources/light/git-pull-request.svg",
-          "dark": "resources/dark/git-pull-request.svg"
-        }
+        "icon": "$(git-pull-request)"
       }
     ],
     "viewsContainers": {
@@ -74,70 +55,54 @@
         {
           "id": "lychee-quick-sidebar",
           "title": "Lychee Quick",
-          "icon": "party-popper.svg"
+          "icon": "$(zap)"
         }
       ]
     },
     "views": {
       "lychee-quick-sidebar": [
         {
-          "id": "lychee-quick.linearView",
+          "id": "lychee-quick.linear-view",
           "name": "Linear",
           "type": "tree",
-          "checkbox": true
-        },
-        {
-          "id": "lychee-quick.vercelView",
-          "name": "Vercel"
+          "checkbox": true,
+          "icon": "$(zap)"
         }
       ]
     },
     "menus": {
-      "commandPalette": [
-        {
-          "command": "lychee-quick.refreshLinear",
-          "when": "false"
-        },
-        {
-          "command": "lychee-quick.checkBranch",
-          "when": "false"
-        },
-        {
-          "command": "lychee-quick.openIssue",
-          "when": "false"
-        }
-      ],
+      "commandPalette": [],
       "view/title": [
         {
-          "command": "lychee-quick.releaseIssues",
+          "command": "lychee-quick.linear-view.release-issues",
           "group": "navigation",
-          "when": "view == lychee-quick.linearView"
+          "when": "view == lychee-quick.linear-view"
         },
         {
-          "command": "lychee-quick.refreshLinear",
+          "command": "lychee-quick.linear-view.refresh",
           "group": "navigation",
-          "when": "view == lychee-quick.linearView"
+          "when": "view == lychee-quick.linear-view"
         }
       ],
       "view/item/context": [
         {
-          "command": "lychee-quick.checkBranch",
-          "when": "view == lychee-quick.linearView && viewItem == lychee-quick.linearViewItem",
+          "command": "lychee-quick.linear-view.check-branch",
+          "when": "view == lychee-quick.linear-view && viewItem == lychee-quick.linear-view.issue",
           "group": "inline"
         },
         {
-          "command": "lychee-quick.openIssue",
-          "when": "view == lychee-quick.linearView && viewItem == lychee-quick.linearViewItem",
+          "command": "lychee-quick.linear-view.open-issue",
+          "when": "view == lychee-quick.linear-view && viewItem == lychee-quick.linear-view.issue",
           "group": "inline"
         },
         {
-          "command": "lychee-quick.sendPreview",
-          "when": "view == lychee-quick.linearView && viewItem == lychee-quick.linearPullRequestTreeItem",
+          "command": "lychee-quick.linear-view.send-preview",
+          "when": "view == lychee-quick.linear-view && viewItem == lychee-quick.linear-view.pull-request",
           "group": "inline"
         },
         {
-          "command": "lychee-quick.openPullRequest",
-          "when": "view == lychee-quick.linearView && viewItem == lychee-quick.linearPullRequestTreeItem",
+          "command": "lychee-quick.linear-view.open-pull-request",
+          "when": "view == lychee-quick.linear-view && viewItem == lychee-quick.linear-view.pull-request",
           "group": "inline"
         }
       ]
@@ -198,7 +163,6 @@
     "pretest": "bun run build && bun run lint",
     "lint": "eslint . --ext ts",
     "test": "bun run test",
-    "add-icon": "bun scripts/add-icon.ts",
     "codegen": "bun scripts/codegen.ts"
   },
   "devDependencies": {
@@ -213,27 +177,25 @@
     "eslint": "9",
     "glob": "^8.1.0",
     "mocha": "^10.2.0",
-    "typescript": "^5.0.0"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
-  },
-  "dependencies": {
+    "typescript": "^5.0.0",
     "@eslint/js": "^9.22.0",
     "@graphql-codegen/typescript-graphql-request": "^6.2.0",
     "@graphql-codegen/typescript-operations": "^4.5.1",
-    "@linear/sdk": "^38.0.0",
     "@types/dotenv": "^8.2.0",
-    "@types/node-notifier": "^8.0.5",
     "@typescript-eslint/eslint-plugin": "^8.26.1",
+    "eslint-config-prettier": "^10.1.1",
+    "eslint-plugin-prettier": "^5.2.3",
+    "@types/node-notifier": "^8.0.5"
+  },
+  "dependencies": {
+    "@linear/sdk": "^38.0.0",
     "@vercel/sdk": "^1.5.0",
     "@vscode/vsce": "^3.2.2",
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
     "dotenv": "^16.4.5",
-    "eslint-config-prettier": "^10.1.1",
-    "eslint-plugin-prettier": "^5.2.3",
     "graphql": "^16.10.0",
+    "graphql-request": "^7.1.2",
     "inquirer": "^12.4.3",
     "log-update": "^6.1.0",
     "node-notifier": "^10.0.1",

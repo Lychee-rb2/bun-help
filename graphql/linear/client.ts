@@ -16438,18 +16438,77 @@ export type ZendeskSettingsInput = {
   url: Scalars['String']['input'];
 };
 
-export type IssuesQueryVariables = Exact<{ [key: string]: never; }>;
+export type CreateCommentMutationVariables = Exact<{
+  input: CommentCreateInput;
+}>;
 
 
-export type IssuesQuery = { __typename?: 'Query', issues: { __typename?: 'IssueConnection', nodes: Array<{ __typename?: 'Issue', id: string, title: string }> } };
+export type CreateCommentMutation = { __typename?: 'Mutation', commentCreate: { __typename?: 'CommentPayload', comment: { __typename?: 'Comment', url: string } } };
+
+export type IssuesQueryVariables = Exact<{
+  team: Scalars['String']['input'];
+}>;
 
 
+export type IssuesQuery = { __typename?: 'Query', issues: { __typename?: 'IssueConnection', nodes: Array<{ __typename?: 'Issue', id: string, identifier: string, title: string, url: string, branchName: string, assignee?: { __typename?: 'User', isMe: boolean, displayName: string, avatarUrl?: string | null } | null, state: { __typename?: 'WorkflowState', type: string, color: string, position: number }, attachments: { __typename?: 'AttachmentConnection', nodes: Array<{ __typename?: 'Attachment', id: string, url: string, metadata: any }> } }> } };
+
+export type UsersQueryVariables = Exact<{
+  filter?: InputMaybe<UserFilter>;
+}>;
+
+
+export type UsersQuery = { __typename?: 'Query', users: { __typename?: 'UserConnection', nodes: Array<{ __typename?: 'User', id: string, name: string }> } };
+
+
+export const CreateCommentDocument = gql`
+    mutation createComment($input: CommentCreateInput!) {
+  commentCreate(input: $input) {
+    comment {
+      url
+    }
+  }
+}
+    `;
 export const IssuesDocument = gql`
-    query issues {
-  issues {
+    query issues($team: String!) {
+  issues(
+    filter: {team: {name: {eq: $team}}, cycle: {isActive: {eq: true}}}
+    sort: {workflowState: {order: Ascending}}
+    first: 200
+  ) {
     nodes {
       id
+      identifier
       title
+      url
+      branchName
+      assignee {
+        isMe
+        displayName
+        avatarUrl
+      }
+      state {
+        type
+        color
+        position
+      }
+      attachments(filter: {sourceType: {eq: "github"}}) {
+        nodes {
+          id
+          url
+          metadata
+        }
+      }
+    }
+  }
+}
+    `;
+export const UsersDocument = gql`
+    query users($filter: UserFilter) {
+  users(filter: $filter) {
+    nodes {
+      id
+      name
     }
   }
 }
@@ -16462,8 +16521,14 @@ const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationTy
 
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
-    issues(variables?: IssuesQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<IssuesQuery> {
+    createComment(variables: CreateCommentMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<CreateCommentMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<CreateCommentMutation>(CreateCommentDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'createComment', 'mutation', variables);
+    },
+    issues(variables: IssuesQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<IssuesQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<IssuesQuery>(IssuesDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'issues', 'query', variables);
+    },
+    users(variables?: UsersQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UsersQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<UsersQuery>(UsersDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'users', 'query', variables);
     }
   };
 }

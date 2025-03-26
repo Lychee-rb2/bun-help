@@ -62,11 +62,19 @@ export const buildCommentBody = (
   footer?: string,
 ) => {
   return {
-    type: "doc",
-    content: [
-      ...buildHello(mentions),
-      buildPreviews(previews),
-      ...(footer ? buildFooter(footer) : []),
-    ],
+    linear: {
+      type: "doc",
+      content: [
+        ...buildHello(mentions),
+        buildPreviews(previews),
+        ...(footer ? buildFooter(footer) : []),
+      ],
+    },
+    markdown: [
+      `# Hello ${mentions.map((i) => i.label).join(",")}, preview links👇`,
+      `---`,
+      ...previews.map((i) => `- [${i.name}](${i.url})`),
+      ...(footer ? [`---`, footer] : []),
+    ].join("\n"),
   };
 };
