@@ -65,8 +65,13 @@
           "id": "lychee-quick.linear-view",
           "name": "Linear",
           "type": "tree",
-          "checkbox": true,
-          "icon": "$(zap)"
+          "checkbox": true
+        },
+        {
+          "id": "lychee-quick.vercel-view",
+          "name": "Vercel",
+          "type": "tree",
+          "checkbox": true
         }
       ]
     },
@@ -157,6 +162,7 @@
   "module": "index.ts",
   "scripts": {
     "postinstall": "bun scripts/postinstall.ts",
+    "package": "bun scripts/package.ts",
     "vscode:prepublish": "bun run compile",
     "compile": "bun esbuild.config.js",
     "watch": "bun esbuild.config.js --watch",

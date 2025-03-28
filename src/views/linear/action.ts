@@ -1,5 +1,5 @@
-import { createClient } from "@/src/fetch/client";
 import { cli, findNextBranch, getConfig, openExternal } from "@/src/help";
+import { createClient } from "@@/fetch/linear";
 import { format } from "date-fns";
 import * as vscode from "vscode";
 import { z } from "zod";
@@ -9,7 +9,7 @@ import type { PullRequestTreeItem } from "./pull-request-tree-item";
 
 export const sendPreview = async (item: PullRequestTreeItem) => {
   const config = getConfig();
-  const client = createClient(config.linearApiKey);
+  const client = createClient(config.get<string>("linearApiKey"));
 
   const emails =
     config
@@ -50,22 +50,21 @@ export const releaseIssues = async (items: Set<IssueTreeItem>) => {
   const content = [
     `# Release note: ${format(new Date(), "yyyy-MM-dd")}`,
     [...items]
-      .map((i) => {
-        return {
-          title: i.issue.identifier + " " + i.issue.title,
-          url: i.issue.url,
-          prs: i.issue.attachments.nodes.map((a) => ({
-            title: a.metadata.title,
-            url: a.metadata.url,
-          })),
-        };
-      })
+      .map((i) => ({
+        title: i.issue.identifier + " " + i.issue.title,
+        url: i.issue.url,
+        prs: i.issue.attachments.nodes.map((a) => ({
+          title: a.metadata.title,
+          url: a.metadata.url,
+        })),
+      }))
       .map((i) =>
         [
           `## [${i.title}](${i.url})`,
-          ...i.prs.map((pr) => `- [${pr.title}](${pr.url})`),
+          i.prs.map((pr) => `- [${pr.title}](${pr.url})`).join("\n"),
         ].join("\n"),
-      ),
+      )
+      .join("\n"),
   ].join("\n");
   await vscode.env.clipboard.writeText(content);
   await vscode.window.showInformationMessage("已复制到剪贴板");

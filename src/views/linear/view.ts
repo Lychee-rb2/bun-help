@@ -1,14 +1,18 @@
-import { LINEAR_VIEW, openExternal, register } from "../help";
+import { LINEAR_VIEW, openExternal, register } from "@@/help";
 
 import type { Sdk } from "graphql/linear/client";
 import * as vscode from "vscode";
 
-import { createClient } from "../fetch/client";
-import { checkBranch, releaseIssues, sendPreview } from "./linear/action";
-import { AssigneeTreeItem } from "./linear/assignee-tree-item";
-import { LinearIssuesCache } from "./linear/cache";
-import { IssueTreeItem } from "./linear/issue-tree-item";
-import { PullRequestTreeItem } from "./linear/pull-request-tree-item";
+import { createClient } from "@@/fetch/linear";
+import {
+  checkBranch,
+  releaseIssues,
+  sendPreview,
+} from "@@/views/linear/action";
+import { AssigneeTreeItem } from "@@/views/linear/assignee-tree-item";
+import { LinearIssuesCache } from "@@/views/linear/cache";
+import { IssueTreeItem } from "@@/views/linear/issue-tree-item";
+import { PullRequestTreeItem } from "@@/views/linear/pull-request-tree-item";
 
 type TreeItem = IssueTreeItem | AssigneeTreeItem | PullRequestTreeItem;
 
@@ -39,7 +43,7 @@ export class LinearTreeDataProvider
   };
   constructor(context: vscode.ExtensionContext) {
     const config = vscode.workspace.getConfiguration("lychee-quick");
-    this.client = createClient(config.linearApiKey);
+    this.client = createClient(config.get<string>("linearApiKey"));
     this.cache = new LinearIssuesCache(context, this.client);
 
     const view = vscode.window.createTreeView(`lychee-quick.${this.id}`, {
@@ -76,7 +80,7 @@ export class LinearTreeDataProvider
     );
   }
 
-  async getTreeItem(element: TreeItem) {
+  getTreeItem(element: TreeItem) {
     return element;
   }
 

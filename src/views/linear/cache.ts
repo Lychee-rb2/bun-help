@@ -6,8 +6,8 @@ interface IssuesCache {
   issues: Issue[];
   t: number;
 }
-
 export class LinearIssuesCache {
+  private cacheTime = 1000 * 60 * 30;
   private config = vscode.workspace.getConfiguration("lychee-quick");
   private cacheKey: string;
   public issues: IssuesCache["issues"] = [];
@@ -15,17 +15,19 @@ export class LinearIssuesCache {
     public context: vscode.ExtensionContext,
     public client: Sdk,
   ) {
-    this.cacheKey = `linearIssuesCache-${this.config.linearTeam}`;
+    this.cacheKey = `linearIssuesCache-${this.config.get<string>("linearTeam")}`;
   }
 
   private async fetchLinearIssues(): Promise<Issue[]> {
-    return this.client
-      .issues({ team: this.config.linearTeam })
-      .then((res) => res.issues.nodes);
+    const team = this.config.get<string>("linearTeam");
+    if (!team) {
+      throw new Error("Linear team is not set");
+    }
+    return this.client.issues({ team }).then((res) => res.issues.nodes);
   }
   async getIssue() {
     const cachedData = this.context.globalState.get<IssuesCache>(this.cacheKey);
-    if (cachedData && Date.now() - cachedData.t < 1000 * 60 * 60 * 24) {
+    if (cachedData && Date.now() - cachedData.t < this.cacheTime) {
       return cachedData.issues;
     }
     const data = {

@@ -17,6 +17,9 @@
       "help/*": [
         "./help/*"
       ],
+      "@@/*": [
+        "./src/*"
+      ]
     },
     // Bundler mode
     "moduleResolution": "bundler",
