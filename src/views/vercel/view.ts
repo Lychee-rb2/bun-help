@@ -1,8 +1,10 @@
 import { register, VERCEL_VIEW } from "@/src/help";
 import { Vercel } from "@vercel/sdk";
-import type { TreeItem } from "vscode";
 import * as vscode from "vscode";
 import { VercelProjectsCache } from "./cache";
+import { DeployHookTreeItem, ReleaseTreeItem } from "./release-tree-item";
+
+type TreeItem = ReleaseTreeItem | DeployHookTreeItem;
 
 export class VercelTreeDataProvider
   implements vscode.TreeDataProvider<TreeItem>
@@ -39,7 +41,14 @@ export class VercelTreeDataProvider
   getTreeItem(element: TreeItem) {
     return element;
   }
-  getChildren(): vscode.ProviderResult<TreeItem[]> {
+  async getChildren(element?: TreeItem): Promise<TreeItem[]> {
+    if (!element) {
+      const projects = await this.cache.getProjects();
+      return ReleaseTreeItem.from(projects);
+    }
+    if (element instanceof ReleaseTreeItem) {
+      return DeployHookTreeItem.from(element);
+    }
     return [];
   }
 

@@ -1,9 +1,6 @@
 import { Vercel } from "@vercel/sdk";
 import * as vscode from "vscode";
-type Project = Awaited<
-  ReturnType<Vercel["projects"]["getProjects"]>
->["projects"][number];
-
+import { Project } from "./type";
 interface ProjectsCache {
   projects: Project[];
   t: number;
