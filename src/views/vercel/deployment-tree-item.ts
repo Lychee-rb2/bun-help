@@ -1,4 +1,4 @@
-import { iconMap, treeId, typedBoolean, VERCEL_VIEW } from "@/src/help";
+import { iconMap, treeId, typedBoolean, VERCEL_VIEW } from "@/help";
 import type { Vercel } from "@vercel/sdk";
 import { formatDistanceStrict, formatDistanceToNow } from "date-fns";
 import { zhCN } from "date-fns/locale";

@@ -1,4 +1,4 @@
-import { iconMap, treeId, VERCEL_VIEW } from "@/src/help";
+import { iconMap, treeId, VERCEL_VIEW } from "@/help";
 import * as vscode from "vscode";
 import { Project, type DeployHook as _DeployHook } from "./type";
 

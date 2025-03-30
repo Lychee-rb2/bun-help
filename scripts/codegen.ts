@@ -11,7 +11,7 @@ Object.entries(config.projects).forEach(([key, project]) => {
     schema: project.schema,
     documents: project.documents,
     generates: {
-      [`graphql/${key}/client.ts`]: { plugins },
+      [`src/graphql/${key}.client.ts`]: { plugins },
     },
   });
 });

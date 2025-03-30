@@ -1,4 +1,4 @@
-import { LINEAR_VIEW, treeId } from "@/src/help/const";
+import { LINEAR_VIEW, treeId } from "@/help/const";
 import * as vscode from "vscode";
 import { IssueTreeItem } from "./issue-tree-item";
 import type { Issue } from "./type";

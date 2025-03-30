@@ -12,12 +12,6 @@
     "allowJs": true,
     "paths": {
       "@/*": [
-        "./*"
-      ],
-      "help/*": [
-        "./help/*"
-      ],
-      "@@/*": [
         "./src/*"
       ]
     },
@@ -39,7 +33,9 @@
     "outDir": "out",
     "esModuleInterop": true,
     "types": [
-      "vscode"
+      "vscode",
+      "node",
+      "bun"
     ],
   },
   "exclude": [

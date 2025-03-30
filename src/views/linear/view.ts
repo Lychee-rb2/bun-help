@@ -1,18 +1,18 @@
-import { LINEAR_VIEW, openExternal, register } from "@@/help";
+import { LINEAR_VIEW, openExternal, register } from "@/help";
 
-import type { Sdk } from "graphql/linear/client";
+import type { Sdk } from "@/graphql/linear.client";
 import * as vscode from "vscode";
 
-import { createClient } from "@@/fetch/linear";
+import { createClient } from "@/fetch/linear";
 import {
   createBranch,
   releaseIssues,
   sendPreview,
-} from "@@/views/linear/action";
-import { AssigneeTreeItem } from "@@/views/linear/assignee-tree-item";
-import { LinearIssuesCache } from "@@/views/linear/cache";
-import { IssueTreeItem } from "@@/views/linear/issue-tree-item";
-import { PullRequestTreeItem } from "@@/views/linear/pull-request-tree-item";
+} from "@/views/linear/action";
+import { AssigneeTreeItem } from "@/views/linear/assignee-tree-item";
+import { LinearIssuesCache } from "@/views/linear/cache";
+import { IssueTreeItem } from "@/views/linear/issue-tree-item";
+import { PullRequestTreeItem } from "@/views/linear/pull-request-tree-item";
 
 type TreeItem = IssueTreeItem | AssigneeTreeItem | PullRequestTreeItem;
 

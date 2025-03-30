@@ -1,4 +1,4 @@
-import { cli } from "@@/help";
+import { cli } from "@/help";
 import * as vscode from "vscode";
 import type { ProjectBrancheTreeItem } from "./deployment-tree-item";
 import type { DeployHookTreeItem, ReleaseTreeItem } from "./release-tree-item";

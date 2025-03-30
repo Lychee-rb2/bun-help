@@ -1,9 +1,17 @@
-import { iconMap } from "@/src/help";
-import { LINEAR_VIEW, treeId } from "@/src/help/const";
+import { iconMap } from "@/help";
+import { LINEAR_VIEW, treeId } from "@/help/const";
 import * as vscode from "vscode";
 import type { AssigneeTreeItem } from "./assignee-tree-item";
 import { PullRequestTreeItem } from "./pull-request-tree-item";
 import type { Issue } from "./type";
+
+const issueStateMap = {
+  unstarted: "unstarted",
+  started: "started",
+  completed: "completed",
+  canceled: "canceled",
+  backlog: "backlog",
+} as const;
 
 export class IssueTreeItem extends vscode.TreeItem {
   contextValue = treeId(LINEAR_VIEW, "issue");
@@ -20,7 +28,10 @@ export class IssueTreeItem extends vscode.TreeItem {
     if (isReleaseCheckboxEnabled) {
       this.checkboxState = vscode.TreeItemCheckboxState.Unchecked;
     }
-    this.iconPath = iconMap(issue.state.type);
+    const icon = issueStateMap[issue.state.type as keyof typeof issueStateMap];
+    if (icon) {
+      this.iconPath = iconMap(icon);
+    }
   }
 
   static from(

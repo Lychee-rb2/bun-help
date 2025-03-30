@@ -1,5 +1,5 @@
-import { iconMap } from "@/src/help";
-import { LINEAR_VIEW, treeId } from "@/src/help/const";
+import { iconMap } from "@/help";
+import { LINEAR_VIEW, treeId } from "@/help/const";
 import * as vscode from "vscode";
 import type { IssueTreeItem } from "./issue-tree-item";
 import type { Attachment, Issue } from "./type";

@@ -1,5 +1,5 @@
-import { cli, findNextBranch, getConfig, openExternal } from "@/src/help";
-import { createClient } from "@@/fetch/linear";
+import { createClient } from "@/fetch/linear";
+import { cli, findNextBranch, getConfig, openExternal } from "@/help";
 import { format } from "date-fns";
 import * as vscode from "vscode";
 import { z } from "zod";

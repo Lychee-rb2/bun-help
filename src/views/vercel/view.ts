@@ -1,4 +1,4 @@
-import { openExternal, register, VERCEL_VIEW } from "@/src/help";
+import { openExternal, register, VERCEL_VIEW } from "@/help";
 import { Vercel } from "@vercel/sdk";
 import * as vscode from "vscode";
 import { checkoutBranch, releaseProject, releaseProjects } from "./action";
