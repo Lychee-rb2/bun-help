@@ -259,7 +259,7 @@
     "eslint": "9",
     "glob": "^8.1.0",
     "mocha": "^10.2.0",
-    "typescript": "^5.0.0",
+    "typescript": "^5.8.2",
     "@eslint/js": "^9.22.0",
     "@graphql-codegen/typescript-graphql-request": "^6.2.0",
     "@graphql-codegen/typescript-operations": "^4.5.1",

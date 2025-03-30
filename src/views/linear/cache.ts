@@ -1,4 +1,4 @@
-import type { Sdk } from "@/graphql/linear/client";
+import type { Sdk } from "@/graphql/linear.client";
 import * as vscode from "vscode";
 import type { Issue } from "./type";
 
