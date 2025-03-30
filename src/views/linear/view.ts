@@ -5,7 +5,7 @@ import * as vscode from "vscode";
 
 import { createClient } from "@@/fetch/linear";
 import {
-  checkBranch,
+  createBranch,
   releaseIssues,
   sendPreview,
 } from "@@/views/linear/action";
@@ -45,7 +45,6 @@ export class LinearTreeDataProvider
     const config = vscode.workspace.getConfiguration("lychee-quick");
     this.client = createClient(config.get<string>("linearApiKey"));
     this.cache = new LinearIssuesCache(context, this.client);
-
     const view = vscode.window.createTreeView(`lychee-quick.${this.id}`, {
       treeDataProvider: this,
       manageCheckboxStateManually: true,
@@ -69,7 +68,7 @@ export class LinearTreeDataProvider
     this.register("open-issue", (item: IssueTreeItem) =>
       openExternal(item.issue.url),
     );
-    this.register("check-branch", (item: IssueTreeItem) => checkBranch(item));
+    this.register("create-branch", (item: IssueTreeItem) => createBranch(item));
     this.register("refresh", () => this.refresh());
     this.register("send-preview", (item: PullRequestTreeItem) =>
       sendPreview(item),

@@ -27,8 +27,9 @@ export const sendPreview = async (item: PullRequestTreeItem) => {
     item.attachment.metadata.previewLinks,
     config.get<string>("previewsCommentFooter"),
   );
+
   const answer = await vscode.window.showInformationMessage(
-    "Do you want to do this?",
+    `Do you want to send preview comment to Linear issue ${item.issue.identifier}?`,
     {
       modal: true,
       detail: JSON.stringify(body.markdown),
@@ -70,7 +71,7 @@ export const releaseIssues = async (items: Set<IssueTreeItem>) => {
   await vscode.window.showInformationMessage("已复制到剪贴板");
 };
 
-export const checkBranch = async (item: IssueTreeItem) => {
+export const createBranch = async (item: IssueTreeItem) => {
   const branchName = await findNextBranch(item.issue.branchName);
   await cli(["git", "checkout", "main"]);
   await cli(["git", "pull"]);

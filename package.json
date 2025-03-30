@@ -19,33 +19,75 @@
         "command": "lychee-quick.linear-view.open-issue",
         "when": "false",
         "icon": "$(link-external)",
-        "title": "Open Issue"
+        "title": "Open issue"
       },
       {
         "command": "lychee-quick.linear-view.release-issues",
         "icon": "$(rocket)",
-        "title": "Release Issues"
+        "title": "Release issues"
       },
       {
-        "command": "lychee-quick.linear-view.check-branch",
-        "title": "Check Branch",
+        "command": "lychee-quick.linear-view.create-branch",
+        "title": "Create branch",
         "when": "false",
         "icon": "$(git-branch-create)"
       },
       {
+        "command": "lychee-quick.vercel-view.refresh",
+        "title": "Refresh Vercel",
+        "when": "false",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "lychee-quick.vercel-view.release-projects",
+        "icon": "$(rocket)",
+        "when": "false",
+        "title": "Release projects"
+      },
+      {
+        "command": "lychee-quick.vercel-view.release-project",
+        "icon": "$(rocket)",
+        "when": "false",
+        "title": "Release project"
+      },
+      {
+        "command": "lychee-quick.vercel-view.refresh-project",
+        "title": "Refresh Vercel project",
+        "when": "false",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "lychee-quick.vercel-view.open-preview",
+        "when": "false",
+        "icon": "$(open-preview)",
+        "title": "Open preview"
+      },
+      {
+        "command": "lychee-quick.vercel-view.open-inspector",
+        "when": "false",
+        "icon": "$(debug)",
+        "title": "Open inspector"
+      },
+      {
+        "command": "lychee-quick.vercel-view.check-branch",
+        "title": "Check branch",
+        "when": "false",
+        "icon": "$(git-branch)"
+      },
+      {
         "command": "lychee-quick.linear-view.refresh",
-        "title": "Refresh Linear Issues",
+        "title": "Refresh Linear issues",
         "icon": "$(refresh)"
       },
       {
         "command": "lychee-quick.linear-view.send-preview",
-        "title": "Send Preview",
+        "title": "Send preview",
         "when": "false",
         "icon": "$(send)"
       },
       {
         "command": "lychee-quick.linear-view.open-pull-request",
-        "title": "Open Pull Request",
+        "title": "Open pull request",
         "when": "false",
         "icon": "$(git-pull-request)"
       }
@@ -87,11 +129,16 @@
           "command": "lychee-quick.linear-view.refresh",
           "group": "navigation",
           "when": "view == lychee-quick.linear-view"
+        },
+        {
+          "command": "lychee-quick.vercel-view.refresh",
+          "group": "navigation",
+          "when": "view == lychee-quick.vercel-view"
         }
       ],
       "view/item/context": [
         {
-          "command": "lychee-quick.linear-view.check-branch",
+          "command": "lychee-quick.linear-view.create-branch",
           "when": "view == lychee-quick.linear-view && viewItem == lychee-quick.linear-view.issue",
           "group": "inline"
         },
@@ -108,6 +155,36 @@
         {
           "command": "lychee-quick.linear-view.open-pull-request",
           "when": "view == lychee-quick.linear-view && viewItem == lychee-quick.linear-view.pull-request",
+          "group": "inline"
+        },
+        {
+          "command": "lychee-quick.vercel-view.release-projects",
+          "when": "view == lychee-quick.vercel-view && viewItem == lychee-quick.vercel-view.releases.branch",
+          "group": "inline"
+        },
+        {
+          "command": "lychee-quick.vercel-view.release-project",
+          "when": "view == lychee-quick.vercel-view && viewItem == lychee-quick.vercel-view.releases.branch.project",
+          "group": "inline"
+        },
+        {
+          "command": "lychee-quick.vercel-view.open-preview",
+          "when": "view == lychee-quick.vercel-view && viewItem == lychee-quick.vercel-view.deployments.project.branch",
+          "group": "inline"
+        },
+        {
+          "command": "lychee-quick.vercel-view.open-inspector",
+          "when": "view == lychee-quick.vercel-view && viewItem == lychee-quick.vercel-view.deployments.project.deployment",
+          "group": "inline"
+        },
+        {
+          "command": "lychee-quick.vercel-view.refresh-project",
+          "when": "view == lychee-quick.vercel-view && viewItem == lychee-quick.vercel-view.deployments.project",
+          "group": "inline"
+        },
+        {
+          "command": "lychee-quick.vercel-view.check-branch",
+          "when": "view == lychee-quick.vercel-view && viewItem == lychee-quick.vercel-view.deployments.project.branch",
           "group": "inline"
         }
       ]
