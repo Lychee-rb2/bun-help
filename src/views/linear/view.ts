@@ -1,4 +1,4 @@
-import { LINEAR_VIEW, openExternal, register } from "@/help";
+import { EXTENSION, LINEAR_VIEW, openExternal, register } from "@/help";
 
 import type { Sdk } from "@/graphql/linear.client";
 import * as vscode from "vscode";
@@ -26,7 +26,7 @@ export class LinearTreeDataProvider
     this._onDidChangeTreeData.event;
   private cache: LinearIssuesCache;
 
-  private isReleaseCheckboxEnabled = false;
+  public isReleaseCheckboxEnabled = false;
   private selectedItems: Set<IssueTreeItem> = new Set();
   private _onDidChangeCheckboxState = new vscode.EventEmitter<
     vscode.TreeCheckboxChangeEvent<IssueTreeItem>
@@ -42,10 +42,10 @@ export class LinearTreeDataProvider
     register(`${this.id}.${command}`, callback);
   };
   constructor(context: vscode.ExtensionContext) {
-    const config = vscode.workspace.getConfiguration("lychee-quick");
+    const config = vscode.workspace.getConfiguration(EXTENSION);
     this.client = createClient(config.get<string>("linearApiKey"));
     this.cache = new LinearIssuesCache(context, this.client);
-    const view = vscode.window.createTreeView(`lychee-quick.${this.id}`, {
+    const view = vscode.window.createTreeView(`${EXTENSION}.${this.id}`, {
       treeDataProvider: this,
       manageCheckboxStateManually: true,
     });
@@ -83,17 +83,12 @@ export class LinearTreeDataProvider
     return element;
   }
 
-  async getChildren(
-    element?: AssigneeTreeItem | IssueTreeItem,
-  ): Promise<TreeItem[]> {
+  async getChildren(element?: TreeItem): Promise<TreeItem[]> {
+    const issues = await this.cache.getIssues();
     if (!element) {
-      const issues = await this.cache.getIssue();
       return AssigneeTreeItem.from(issues);
     }
-    if (element instanceof AssigneeTreeItem) {
-      return element.getChildren(this.isReleaseCheckboxEnabled);
-    }
-    return element.getChildren();
+    return element.getChildren(this);
   }
 
   refresh(): void {

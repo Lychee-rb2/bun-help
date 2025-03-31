@@ -1,4 +1,7 @@
 import { Vercel } from "@vercel/sdk";
-
-export const createVercelClient = (token: string) =>
-  new Vercel({ bearerToken: token, timeoutMs: 5000 });
+let vercel: Vercel | null = null;
+export const createVercelClient = (token: string) => {
+  if (vercel) return vercel;
+  vercel = new Vercel({ bearerToken: token, timeoutMs: 5000 });
+  return vercel;
+};

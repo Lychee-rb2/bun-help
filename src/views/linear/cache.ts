@@ -1,45 +1,34 @@
 import type { Sdk } from "@/graphql/linear.client";
+import { EXTENSION } from "@/help";
+import { cacheClient, type Cache } from "@/help/cache";
 import * as vscode from "vscode";
 import type { Issue } from "./type";
 
-interface IssuesCache {
-  issues: Issue[];
-  t: number;
-}
 export class LinearIssuesCache {
   private cacheTime = 1000 * 60 * 30;
-  private config = vscode.workspace.getConfiguration("lychee-quick");
+  private config = vscode.workspace.getConfiguration(EXTENSION);
   private cacheKey: string;
-  public issues: IssuesCache["issues"] = [];
+  private cache: Promise<Cache<Issue[]>>;
   constructor(
     public context: vscode.ExtensionContext,
     public client: Sdk,
   ) {
-    this.cacheKey = `linearIssuesCache-${this.config.get<string>("linearTeam")}`;
+    this.cacheKey = `linear-${this.config.get<string>("linearTeam")}`;
+    this.cache = cacheClient(this.context, this.cacheTime, () =>
+      this.fetchLinearIssues(),
+    );
   }
 
   private async fetchLinearIssues(): Promise<Issue[]> {
     const team = this.config.get<string>("linearTeam");
-    if (!team) {
-      throw new Error("Linear team is not set");
-    }
+    if (!team) throw new Error("Linear team is not set");
     return this.client.issues({ team }).then((res) => res.issues.nodes);
   }
-  async getIssue() {
-    const cachedData = this.context.globalState.get<IssuesCache>(this.cacheKey);
-    if (cachedData && Date.now() - cachedData.t < this.cacheTime) {
-      return cachedData.issues;
-    }
-    const data = {
-      issues: await this.fetchLinearIssues(),
-      t: Date.now(),
-    } satisfies IssuesCache;
-    this.issues = data.issues;
-    await this.context.globalState.update(this.cacheKey, data);
-    return data.issues;
+  async getIssues() {
+    return (await this.cache).get(this.cacheKey);
   }
 
   async clear() {
-    await this.context.globalState.update(this.cacheKey, undefined);
+    return (await this.cache).remove(this.cacheKey);
   }
 }

@@ -4,6 +4,7 @@ import * as vscode from "vscode";
 import type { AssigneeTreeItem } from "./assignee-tree-item";
 import { PullRequestTreeItem } from "./pull-request-tree-item";
 import type { Issue } from "./type";
+import type { LinearTreeDataProvider } from "./view";
 
 const issueStateMap = {
   unstarted: "unstarted",
@@ -43,7 +44,7 @@ export class IssueTreeItem extends vscode.TreeItem {
     );
   }
 
-  getChildren() {
+  getChildren(_: LinearTreeDataProvider) {
     return PullRequestTreeItem.from(this);
   }
 }

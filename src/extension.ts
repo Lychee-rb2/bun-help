@@ -1,10 +1,11 @@
 import * as vscode from "vscode";
+import { EXTENSION } from "./help";
 import { LinearTreeDataProvider } from "./views/linear/view";
 import { VercelTreeDataProvider } from "./views/vercel/view";
 
 export function activate(context: vscode.ExtensionContext) {
   // Get configuration
-  const config = vscode.workspace.getConfiguration("lychee-quick");
+  const config = vscode.workspace.getConfiguration(EXTENSION);
 
   const linearApiKey = config.get<string>("linearApiKey");
   const linearTeam = config.get<string>("linearTeam");

@@ -3,6 +3,7 @@ import { LINEAR_VIEW, treeId } from "@/help/const";
 import * as vscode from "vscode";
 import type { IssueTreeItem } from "./issue-tree-item";
 import type { Attachment, Issue } from "./type";
+import type { LinearTreeDataProvider } from "./view";
 
 export class PullRequestTreeItem extends vscode.TreeItem {
   contextValue = treeId(LINEAR_VIEW, "pull-request");
@@ -18,5 +19,9 @@ export class PullRequestTreeItem extends vscode.TreeItem {
     return issueTreeItem.issue.attachments.nodes.map(
       (attachment) => new PullRequestTreeItem(issueTreeItem.issue, attachment),
     );
+  }
+
+  getChildren(_: LinearTreeDataProvider) {
+    return [];
   }
 }

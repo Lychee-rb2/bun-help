@@ -1,14 +1,14 @@
 import * as vscode from "vscode";
-import { extension } from "./const";
+import { EXTENSION } from "./const";
 
 export const register = <
   T extends Parameters<typeof vscode.commands.registerCommand>[1],
 >(
   cmd: string,
   fn: T,
-) => vscode.commands.registerCommand(`${extension}.${cmd}`, fn);
+) => vscode.commands.registerCommand(`${EXTENSION}.${cmd}`, fn);
 
-export const getConfig = () => vscode.workspace.getConfiguration(extension);
+export const getConfig = () => vscode.workspace.getConfiguration(EXTENSION);
 const map = {
   draft: ["git-pull-request-draft", "pullRequests.draft"],
   open: ["git-pull-request", "pullRequests.open"],

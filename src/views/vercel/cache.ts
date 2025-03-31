@@ -1,77 +1,71 @@
+import { EXTENSION } from "@/help";
+import { cacheClient, type Cache } from "@/help/cache";
 import { Vercel } from "@vercel/sdk";
+import mapValues from "lodash-es/mapValues";
+import pick from "lodash-es/pick";
 import * as vscode from "vscode";
 import { Deployment, Project } from "./type";
-interface ProjectsCache {
-  data: Project[];
-  t: number;
-}
+import type { VercelTreeDataProvider } from "./view";
 export class VercelProjectsCache {
   private cacheTime = 1000 * 60 * 60 * 24;
-  private config = vscode.workspace.getConfiguration("lychee-quick");
+  private config = vscode.workspace.getConfiguration(EXTENSION);
   private cacheKey: string;
+  private cache: Promise<Cache<Project[]>>;
+  private client: Vercel;
 
-  constructor(
-    public context: vscode.ExtensionContext,
-    public client: Vercel,
-  ) {
-    this.cacheKey = `vercelProjectsCache-${this.config.get<string>("vercelTeam")}-projects`;
+  constructor(public context: vscode.ExtensionContext) {
+    this.client = new Vercel({ bearerToken: this.config.get("vercelToken") });
+    this.cacheKey = `vercel-${this.config.get<string>("vercelTeam")}-projects`;
+    this.cache = cacheClient(this.context, this.cacheTime, () =>
+      this.fetchVercelProjects(),
+    );
   }
   private async fetchVercelProjects(): Promise<Project[]> {
     const team = this.config.get<string>("vercelTeam");
-    console.log("vercelTeam");
-    if (!team) {
-      throw new Error("Vercel team is not set");
-    }
-    return this.client.projects
-      .getProjects({ teamId: team })
-      .then((res) => res.projects as Project[])
-      .catch((e) => {
-        console.log(e);
-        throw e;
-      });
+    if (!team) throw new Error("Vercel team is not set");
+    return this.client.projects.getProjects({ teamId: team }).then((res) =>
+      res.projects.map((project) => {
+        return {
+          ...pick(project, ["id", "name"]),
+          link: {
+            deployHooks: project.link.deployHooks.map((deployHook) =>
+              pick(deployHook, ["ref", "url"]),
+            ),
+          },
+          targets: mapValues(project.targets, (target) => pick(target, ["id"])),
+        };
+      }),
+    );
   }
 
   async getProjects() {
-    const cachedData = this.context.globalState.get<ProjectsCache>(
-      this.cacheKey,
-    );
-    if (cachedData && Date.now() - cachedData.t < this.cacheTime) {
-      return cachedData.data;
-    }
-    const cache = {
-      data: await this.fetchVercelProjects(),
-      t: Date.now(),
-    } satisfies ProjectsCache;
-    await this.context.globalState.update(this.cacheKey, cache);
-    return cache.data;
+    return (await this.cache).get(this.cacheKey);
   }
 
-  async clear() {
-    await this.context.globalState.update(this.cacheKey, undefined);
-  }
-}
-
-interface DeploymentsCache {
-  data: Record<string, Deployment[]>;
-  t: number;
+  async clear() {}
 }
 
 export class VercelDeploymentsCache {
   private cacheTime = 1000 * 60 * 3;
-  private config = vscode.workspace.getConfiguration("lychee-quick");
+  private config = vscode.workspace.getConfiguration(EXTENSION);
   private cacheKey: string;
+  private cache: Promise<Cache<Record<string, Deployment[]>>>;
+  private client: Vercel;
 
   constructor(
-    public context: vscode.ExtensionContext,
-    public client: Vercel,
+    provider: VercelTreeDataProvider,
     public project: Project,
   ) {
-    this.cacheKey = `vercelProjectsCache-${this.config.get<string>("vercelTeam")}-${project.id}-deployments`;
+    this.client = new Vercel({ bearerToken: this.config.get("vercelToken") });
+    this.cacheKey = `vercel-${this.config.get<string>("vercelTeam")}-${project.id}-deployments`;
+    this.cache = cacheClient(provider.context, this.cacheTime, () =>
+      this.fetchVercelDeployments(),
+    );
   }
 
   private async fetchDeployments(
     team: string,
-  ): Promise<DeploymentsCache["data"]> {
+  ): Promise<Record<string, Deployment[]>> {
     return (
       await Promise.all(
         [
@@ -85,13 +79,28 @@ export class VercelDeploymentsCache {
               state: "BUILDING,QUEUED,READY,ERROR",
               ...option,
             })
-            .then((res) => res.deployments as Deployment[]),
+            .then((res) => res.deployments),
         ),
       )
     )
       .flat()
       .sort((a, b) => b.created - a.created)
-      .reduce<DeploymentsCache["data"]>((pre, cur) => {
+      .map((project) => ({
+        ...pick(project, [
+          "created",
+          "buildingAt",
+          "ready",
+          "state",
+          "uid",
+          "inspectorUrl",
+        ]),
+        meta: pick(project.meta, [
+          "githubCommitRef",
+          "githubCommitMessage",
+          "branchAlias",
+        ]),
+      }))
+      .reduce<Record<string, Deployment[]>>((pre, cur) => {
         const key = cur.meta?.githubCommitRef;
         if (key) {
           pre[key] = pre[key] || [];
@@ -101,30 +110,18 @@ export class VercelDeploymentsCache {
       }, {});
   }
 
-  private async fetchVercelDeployments(): Promise<DeploymentsCache["data"]> {
+  private async fetchVercelDeployments(): Promise<
+    Record<string, Deployment[]>
+  > {
     const team = this.config.get<string>("vercelTeam");
-    if (!team) {
-      throw new Error("Vercel team is not set");
-    }
+    if (!team) throw new Error("Vercel team is not set");
     return this.fetchDeployments(team);
   }
   async getDeployments() {
-    const cachedData = this.context.globalState.get<DeploymentsCache>(
-      this.cacheKey,
-    );
-    if (cachedData && Date.now() - cachedData.t < this.cacheTime) {
-      return cachedData.data;
-    }
-    const cache = {
-      data: await this.fetchVercelDeployments(),
-      t: Date.now(),
-    } satisfies DeploymentsCache;
-
-    await this.context.globalState.update(this.cacheKey, cache);
-    return cache.data;
+    return (await this.cache).get(this.cacheKey);
   }
 
   async clear() {
-    await this.context.globalState.update(this.cacheKey, undefined);
+    return (await this.cache).remove(this.cacheKey);
   }
 }

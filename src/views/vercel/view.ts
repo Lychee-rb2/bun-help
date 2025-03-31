@@ -1,5 +1,4 @@
-import { openExternal, register, VERCEL_VIEW } from "@/help";
-import { Vercel } from "@vercel/sdk";
+import { EXTENSION, openExternal, register, VERCEL_VIEW } from "@/help";
 import * as vscode from "vscode";
 import { checkoutBranch, releaseProject, releaseProjects } from "./action";
 import { VercelProjectsCache } from "./cache";
@@ -28,7 +27,6 @@ export class VercelTreeDataProvider
   readonly onDidChangeTreeData: vscode.Event<TreeItem | undefined> =
     this._onDidChangeTreeData.event;
   private projectsCache: VercelProjectsCache;
-  private client: Vercel;
   private register = (
     command: string,
     callback: Parameters<typeof register>[1],
@@ -37,10 +35,8 @@ export class VercelTreeDataProvider
   };
 
   constructor(public context: vscode.ExtensionContext) {
-    const config = vscode.workspace.getConfiguration("lychee-quick");
-    this.client = new Vercel({ bearerToken: config.get("vercelToken") });
-    this.projectsCache = new VercelProjectsCache(context, this.client);
-    vscode.window.createTreeView(`lychee-quick.${this.id}`, {
+    this.projectsCache = new VercelProjectsCache(context);
+    vscode.window.createTreeView(`${EXTENSION}.${this.id}`, {
       treeDataProvider: this,
       manageCheckboxStateManually: true,
     });
@@ -83,26 +79,12 @@ export class VercelTreeDataProvider
   async getChildren(element?: TreeItem): Promise<TreeItem[]> {
     const projects = await this.projectsCache.getProjects();
     if (!element) {
-      return [...ReleaseTreeItem.from(projects), new DeploymentsTreeItem()];
+      return [
+        ...ReleaseTreeItem.from(projects),
+        new DeploymentsTreeItem(projects),
+      ];
     }
-    if (element instanceof ReleaseTreeItem) {
-      return DeployHookTreeItem.from(element);
-    }
-    if (!projects) return [];
-    if (element instanceof DeploymentsTreeItem) {
-      return ProjectDeploymentsTreeItem.from(
-        projects,
-        this.context,
-        this.client,
-      );
-    }
-    if (element instanceof ProjectDeploymentsTreeItem) {
-      return ProjectBrancheTreeItem.from(element);
-    }
-    if (element instanceof ProjectBrancheTreeItem) {
-      return ProjectDeploymentTreeItem.from(element);
-    }
-    return [];
+    return element.getChildren(this);
   }
 
   async refresh() {

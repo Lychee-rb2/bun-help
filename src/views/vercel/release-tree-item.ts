@@ -1,6 +1,7 @@
 import { iconMap, treeId, VERCEL_VIEW } from "@/help";
 import * as vscode from "vscode";
 import { Project, type DeployHook as _DeployHook } from "./type";
+import type { VercelTreeDataProvider } from "./view";
 
 type DeployHook = _DeployHook & {
   projectName: Project["name"];
@@ -32,6 +33,9 @@ export class ReleaseTreeItem extends vscode.TreeItem {
       ([branch, deployHooks]) => new ReleaseTreeItem(branch, deployHooks),
     );
   }
+  getChildren(_: VercelTreeDataProvider) {
+    return DeployHookTreeItem.from(this);
+  }
 }
 
 export class DeployHookTreeItem extends vscode.TreeItem {
@@ -44,5 +48,8 @@ export class DeployHookTreeItem extends vscode.TreeItem {
     return releaseTreeItem.deployHooks.map(
       (deployHook) => new DeployHookTreeItem(deployHook),
     );
+  }
+  getChildren(_: VercelTreeDataProvider) {
+    return [];
   }
 }

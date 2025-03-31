@@ -2,6 +2,7 @@ import { LINEAR_VIEW, treeId } from "@/help/const";
 import * as vscode from "vscode";
 import { IssueTreeItem } from "./issue-tree-item";
 import type { Issue } from "./type";
+import type { LinearTreeDataProvider } from "./view";
 
 export class AssigneeTreeItem extends vscode.TreeItem {
   static MyIssues = "My issues";
@@ -36,7 +37,7 @@ export class AssigneeTreeItem extends vscode.TreeItem {
       .map(([label, { issues }]) => new AssigneeTreeItem(label, issues));
   }
 
-  getChildren(isReleaseCheckboxEnabled: boolean) {
-    return IssueTreeItem.from(this, isReleaseCheckboxEnabled);
+  getChildren(provider: LinearTreeDataProvider) {
+    return IssueTreeItem.from(this, provider.isReleaseCheckboxEnabled);
   }
 }
