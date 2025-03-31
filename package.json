@@ -200,10 +200,6 @@
           "type": "string",
           "description": "Linear group name"
         },
-        "lychee-quick.linearSpace": {
-          "type": "string",
-          "description": "Linear space name"
-        },
         "lychee-quick.previewsCommentMentions": {
           "type": "array",
           "description": "Previews comment mentions emails",
@@ -216,10 +212,6 @@
         "lychee-quick.vercelToken": {
           "type": "string",
           "description": "Authentication token for Vercel"
-        },
-        "lychee-quick.vercelProject": {
-          "type": "string",
-          "description": "Vercel project name"
         },
         "lychee-quick.vercelTeam": {
           "type": "string",
