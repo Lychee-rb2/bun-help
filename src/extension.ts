@@ -15,12 +15,10 @@ export function activate(context: vscode.ExtensionContext) {
 
   if (linearApiKey && linearTeam) {
     linearView();
-    // context.subscriptions.push(linearTreeDataProvider.dispose);
   }
 
   if (vercelToken && vercelTeam) {
     vercelView();
-    // context.subscriptions.push(vercelTreeDataProvider.dispose);
   }
 }
 

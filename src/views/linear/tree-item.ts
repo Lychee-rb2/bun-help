@@ -2,6 +2,7 @@ import { iconMap, LINEAR_VIEW, openExternal, treeId } from "@/help";
 import * as vscode from "vscode";
 import { createBranch, sendPreview } from "./action";
 import type { Attachment, Issue } from "./type";
+
 export const assigneeTreeItemFrom = (issues: Issue[]) => {
   const assignees = Object.entries(
     issues.reduce<Record<string, { issues: Issue[] }>>((acc, issue) => {

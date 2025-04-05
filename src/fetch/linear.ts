@@ -1,5 +1,6 @@
 import { getSdk, type Sdk } from "@/graphql/linear.client";
 import { GraphQLClient } from "graphql-request";
+
 let client: Sdk | null = null;
 
 export const createClient = (key?: string): Sdk => {

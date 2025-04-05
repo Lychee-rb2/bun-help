@@ -1,4 +1,4 @@
-import { AiError, DeepseekModel, KimiModel, type AiResponse } from "@/types/ai";
+import { AiError, type AiResponse, DeepseekModel, KimiModel } from "@/types/ai";
 
 const M = 1000000;
 const priceMap = {
