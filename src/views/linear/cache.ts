@@ -1,34 +1,32 @@
-import type { Sdk } from "@/graphql/linear.client";
+import { createClient } from "@/fetch/linear";
 import { EXTENSION } from "@/help";
-import { cacheClient, type Cache } from "@/help/cache";
+import { type Cache, cacheClient } from "@/help/cache";
 import * as vscode from "vscode";
 import type { Issue } from "./type";
 
-export class LinearIssuesCache {
-  private cacheTime = 1000 * 60 * 30;
-  private config = vscode.workspace.getConfiguration(EXTENSION);
-  private cacheKey: string;
-  private cache: Promise<Cache<Issue[]>>;
-  constructor(
-    public context: vscode.ExtensionContext,
-    public client: Sdk,
-  ) {
-    this.cacheKey = `linear-${this.config.get<string>("linearTeam")}`;
-    this.cache = cacheClient(this.context, this.cacheTime, () =>
-      this.fetchLinearIssues(),
-    );
-  }
+export const linearIssuesCache = (): Cache<Issue[]> => {
+  const config = vscode.workspace.getConfiguration(EXTENSION);
+  const cacheKey = `linear-${config.get<string>("linearTeam")}`;
 
-  private async fetchLinearIssues(): Promise<Issue[]> {
-    const team = this.config.get<string>("linearTeam");
+  const cache = cacheClient(1000 * 60 * 30, async () => {
+    const team = config.get<string>("linearTeam");
+    const apiKey = config.get<string>("linearApiKey");
     if (!team) throw new Error("Linear team is not set");
-    return this.client.issues({ team }).then((res) => res.issues.nodes);
-  }
-  async getIssues() {
-    return (await this.cache).get(this.cacheKey);
-  }
-
-  async clear() {
-    return (await this.cache).remove(this.cacheKey);
-  }
-}
+    if (!apiKey) throw new Error("Linear api key is not set");
+    return createClient(apiKey)
+      .issues({ team })
+      .then((res) => res.issues.nodes);
+  });
+  let issues: Issue[] = [];
+  return {
+    get: async () => {
+      if (issues.length) return issues;
+      issues = await cache.then((cache) => cache.get(cacheKey));
+      return issues;
+    },
+    remove: async () => {
+      issues = [];
+      return cache.then((cache) => cache.remove(cacheKey));
+    },
+  };
+};

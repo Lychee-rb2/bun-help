@@ -1,94 +1,86 @@
-import { EXTENSION, openExternal, register, VERCEL_VIEW } from "@/help";
+import { EXTENSION, register, VERCEL_VIEW } from "@/help";
+import type { Cache } from "@/help/cache";
 import * as vscode from "vscode";
-import { checkoutBranch, releaseProject, releaseProjects } from "./action";
-import { VercelProjectsCache } from "./cache";
-import {
-  DeploymentsTreeItem,
-  ProjectBrancheTreeItem,
-  ProjectDeploymentsTreeItem,
-  ProjectDeploymentTreeItem,
-} from "./deployment-tree-item";
-import { DeployHookTreeItem, ReleaseTreeItem } from "./release-tree-item";
+import { vercelProjectCache } from "./cache";
 
-type DeploymentTreeItem =
+import {
+  deployHookTreeItem,
+  deploymentsTreeItem,
+  projectBrancheTreeItem,
+  projectDeploymentsTreeItem,
+  projectDeploymentTreeItem,
+  releaseTreeItem,
+  releaseTreeItemFrom,
+} from "./tree-item";
+import type { Project } from "./type";
+
+type DeploymentsTreeItem = ReturnType<typeof deploymentsTreeItem>;
+type ProjectDeploymentsTreeItem = ReturnType<typeof projectDeploymentsTreeItem>;
+type ProjectBrancheTreeItem = ReturnType<typeof projectBrancheTreeItem>;
+type ProjectDeploymentTreeItem = ReturnType<typeof projectDeploymentTreeItem>;
+type ReleaseTreeItem = ReturnType<typeof releaseTreeItem>;
+type DeployHookTreeItem = ReturnType<typeof deployHookTreeItem>;
+
+type TreeItem =
   | DeploymentsTreeItem
   | ProjectDeploymentsTreeItem
+  | ProjectBrancheTreeItem
   | ProjectDeploymentTreeItem
-  | ProjectBrancheTreeItem;
-
-type TreeItem = ReleaseTreeItem | DeployHookTreeItem | DeploymentTreeItem;
+  | ReleaseTreeItem
+  | DeployHookTreeItem;
 
 export class VercelTreeDataProvider
   implements vscode.TreeDataProvider<TreeItem>
 {
-  readonly id = VERCEL_VIEW;
   private _onDidChangeTreeData: vscode.EventEmitter<TreeItem | undefined> =
     new vscode.EventEmitter<TreeItem | undefined>();
   readonly onDidChangeTreeData: vscode.Event<TreeItem | undefined> =
     this._onDidChangeTreeData.event;
-  private projectsCache: VercelProjectsCache;
-  private register = (
-    command: string,
-    callback: Parameters<typeof register>[1],
-  ) => {
-    register(`${this.id}.${command}`, callback);
-  };
 
-  constructor(public context: vscode.ExtensionContext) {
-    this.projectsCache = new VercelProjectsCache(context);
-    vscode.window.createTreeView(`${EXTENSION}.${this.id}`, {
-      treeDataProvider: this,
-      manageCheckboxStateManually: true,
-    });
-    this.initCommands();
+  constructor(public cache: Cache<Project[]>) {}
+
+  async getTreeItem(item: TreeItem) {
+    return item.treeItem;
   }
 
-  private initCommands() {
-    this.register("refresh", () => this.refresh());
-    this.register("release-projects", (item: ReleaseTreeItem) =>
-      releaseProjects(item),
-    );
-    this.register("release-project", (item: DeployHookTreeItem) =>
-      releaseProject(item),
-    );
-    this.register("open-preview", (item: ProjectBrancheTreeItem) => {
-      const url = item.deployments.at(0)?.meta?.branchAlias;
-      if (url) {
-        openExternal("https://" + url);
-      }
-    });
-    this.register("open-inspector", (item: ProjectDeploymentTreeItem) =>
-      openExternal(item.deployment.inspectorUrl),
-    );
-    this.register(
-      "refresh-project",
-      async (item: ProjectDeploymentsTreeItem) => {
-        await item.cache.clear();
-        this._onDidChangeTreeData.fire(undefined);
-      },
-    );
-    this.register("check-branch", (item: ProjectBrancheTreeItem) =>
-      checkoutBranch(item),
-    );
-  }
-
-  async getTreeItem(element: TreeItem) {
-    return element;
-  }
-
-  async getChildren(element?: TreeItem): Promise<TreeItem[]> {
-    const projects = await this.projectsCache.getProjects();
-    if (!element) {
-      return [
-        ...ReleaseTreeItem.from(projects),
-        new DeploymentsTreeItem(projects),
-      ];
+  async getChildren(item?: TreeItem): Promise<TreeItem[]> {
+    const projects = await this.cache.get();
+    if (!item) {
+      return [...releaseTreeItemFrom(projects), deploymentsTreeItem(projects)];
     }
-    return element.getChildren(this);
+    return item.getChildren();
   }
 
   async refresh() {
-    await this.projectsCache.clear();
+    await this.cache.remove();
     this._onDidChangeTreeData.fire(undefined);
   }
 }
+
+export const vercelView = () => {
+  const cmd = (cmd: string) => `${VERCEL_VIEW}.${cmd}`;
+  const projectsCache = vercelProjectCache();
+  const treeDataProvider = new VercelTreeDataProvider(projectsCache);
+  vscode.window.createTreeView(`${EXTENSION}.${VERCEL_VIEW}`, {
+    treeDataProvider,
+  });
+  register(cmd("refresh"), () => treeDataProvider.refresh());
+  register<ReleaseTreeItem>(cmd("release-projects"), (item) =>
+    item.releaseProjects(),
+  );
+  register<DeployHookTreeItem>(cmd("release-project"), (item) =>
+    item.releaseProject(),
+  );
+  register<ProjectBrancheTreeItem>(cmd("open-preview"), (item) =>
+    item.openPreview(),
+  );
+  register<ProjectDeploymentTreeItem>(cmd("open-inspector"), (item) =>
+    item.openInspector(),
+  );
+  register<ProjectDeploymentsTreeItem>(cmd("refresh-project"), (item) =>
+    item.refreshProject(),
+  );
+  register<ProjectBrancheTreeItem>(cmd("check-branch"), (item) =>
+    item.checkoutBranch(),
+  );
+};

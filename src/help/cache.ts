@@ -2,15 +2,19 @@ import { createRedisClient } from "@/fetch/redis";
 import { EXTENSION } from "@/help/const";
 import { isAfter } from "date-fns";
 import * as vscode from "vscode";
-export interface Cache<T> {
+
+export interface CacheProvider<T> {
   get: (key: string) => Promise<T>;
   remove: (key: string) => Promise<void>;
 }
+export interface Cache<T> {
+  get: () => Promise<T>;
+  remove: () => Promise<void>;
+}
 export const cacheClient = async <T>(
-  context: vscode.ExtensionContext,
   cacheTime: number,
   fetch: () => Promise<T>,
-): Promise<Cache<T>> => {
+): Promise<CacheProvider<T>> => {
   const config = vscode.workspace.getConfiguration(EXTENSION);
   const url = config.get<string>("redisUrl");
   const token = config.get<string>("redisToken");
@@ -20,35 +24,36 @@ export const cacheClient = async <T>(
     if (pingRes) {
       return upstashCache<T>(cacheTime, fetch);
     }
-    return vscodeCache<T>(cacheTime, fetch, context);
+    return vscodeCache<T>(cacheTime, fetch);
   }
-  return vscodeCache<T>(cacheTime, fetch, context);
+  return vscodeCache<T>(cacheTime, fetch);
 };
 
 export const vscodeCache = <T>(
   cacheTime: number,
   fetch: () => Promise<T>,
-  context: vscode.ExtensionContext,
-): Cache<T> => {
+): CacheProvider<T> => {
+  const cache: Record<string, { data: T; t: number }> = {};
   return {
     get: async (key: string) => {
-      const cachedData = context.globalState.get<{ data: T; t: number }>(key);
+      const cachedData = cache[key];
       if (cachedData && isAfter(cachedData.t + cacheTime, Date.now())) {
         return cachedData.data;
       }
       const data = await fetch();
-      await context.globalState.update(key, { data, t: Date.now() });
+      cachedData.data = data;
+      cachedData.t = Date.now();
       return data;
     },
     remove: async (key: string) => {
-      await context.globalState.update(key, undefined);
+      cache[key] = undefined;
     },
   };
 };
 export const upstashCache = <T>(
   cacheTime: number,
   fetch: () => Promise<T>,
-): Cache<T> => {
+): CacheProvider<T> => {
   const config = vscode.workspace.getConfiguration(EXTENSION);
   const url = config.get<string>("redisUrl");
   const token = config.get<string>("redisToken");

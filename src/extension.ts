@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { EXTENSION } from "./help";
-import { LinearTreeDataProvider } from "./views/linear/view";
-import { VercelTreeDataProvider } from "./views/vercel/view";
+import { linearView } from "./views/linear/view";
+import { vercelView } from "./views/vercel/view";
 
 export function activate(context: vscode.ExtensionContext) {
   // Get configuration
@@ -14,12 +14,12 @@ export function activate(context: vscode.ExtensionContext) {
   const vercelTeam = config.get<string>("vercelTeam");
 
   if (linearApiKey && linearTeam) {
-    new LinearTreeDataProvider(context);
+    linearView();
     // context.subscriptions.push(linearTreeDataProvider.dispose);
   }
 
   if (vercelToken && vercelTeam) {
-    new VercelTreeDataProvider(context);
+    vercelView();
     // context.subscriptions.push(vercelTreeDataProvider.dispose);
   }
 }

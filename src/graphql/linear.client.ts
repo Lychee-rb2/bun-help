@@ -16450,7 +16450,7 @@ export type IssuesQueryVariables = Exact<{
 }>;
 
 
-export type IssuesQuery = { __typename?: 'Query', issues: { __typename?: 'IssueConnection', nodes: Array<{ __typename?: 'Issue', id: string, identifier: string, title: string, url: string, branchName: string, assignee?: { __typename?: 'User', isMe: boolean, displayName: string, avatarUrl?: string | null } | null, state: { __typename?: 'WorkflowState', type: string, color: string, position: number }, attachments: { __typename?: 'AttachmentConnection', nodes: Array<{ __typename?: 'Attachment', id: string, url: string, metadata: any }> } }> } };
+export type IssuesQuery = { __typename?: 'Query', issues: { __typename?: 'IssueConnection', nodes: Array<{ __typename?: 'Issue', id: string, identifier: string, title: string, url: string, branchName: string, updatedAt: any, assignee?: { __typename?: 'User', isMe: boolean, displayName: string, avatarUrl?: string | null } | null, state: { __typename?: 'WorkflowState', type: string, color: string, position: number }, attachments: { __typename?: 'AttachmentConnection', nodes: Array<{ __typename?: 'Attachment', id: string, url: string, metadata: any }> } }> } };
 
 export type UsersQueryVariables = Exact<{
   filter?: InputMaybe<UserFilter>;
@@ -16482,6 +16482,7 @@ export const IssuesDocument = gql`
       title
       url
       branchName
+      updatedAt
       assignee {
         isMe
         displayName

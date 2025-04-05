@@ -1,110 +1,101 @@
-import { EXTENSION, LINEAR_VIEW, openExternal, register } from "@/help";
+import {
+  EXTENSION,
+  LINEAR_VIEW,
+  onViewCheckboxStateChange,
+  register,
+  treeId,
+} from "@/help";
 
-import type { Sdk } from "@/graphql/linear.client";
 import * as vscode from "vscode";
 
-import { createClient } from "@/fetch/linear";
-import {
-  createBranch,
-  releaseIssues,
-  sendPreview,
-} from "@/views/linear/action";
-import { AssigneeTreeItem } from "@/views/linear/assignee-tree-item";
-import { LinearIssuesCache } from "@/views/linear/cache";
-import { IssueTreeItem } from "@/views/linear/issue-tree-item";
-import { PullRequestTreeItem } from "@/views/linear/pull-request-tree-item";
+import type { Cache } from "@/help/cache";
+import { releaseIssues } from "@/views/linear/action";
 
-type TreeItem = IssueTreeItem | AssigneeTreeItem | PullRequestTreeItem;
+import { linearIssuesCache } from "./cache";
+import {
+  assigneeTreeItem,
+  assigneeTreeItemFrom,
+  issueTreeItem,
+  pullRequestTreeItem,
+} from "./tree-item";
+import type { Issue } from "./type";
+
+type IssueTreeItem = ReturnType<typeof issueTreeItem>;
+type AssigneeTreeItem = ReturnType<typeof assigneeTreeItem>;
+type PullRequestTreeItem = ReturnType<typeof pullRequestTreeItem>;
+type TreeItem = AssigneeTreeItem | IssueTreeItem | PullRequestTreeItem;
 
 export class LinearTreeDataProvider
   implements vscode.TreeDataProvider<TreeItem>
 {
-  readonly id = LINEAR_VIEW;
+  public releaseCheckbox = false;
   private _onDidChangeTreeData: vscode.EventEmitter<TreeItem | undefined> =
     new vscode.EventEmitter<TreeItem | undefined>();
   readonly onDidChangeTreeData: vscode.Event<TreeItem | undefined> =
     this._onDidChangeTreeData.event;
-  private cache: LinearIssuesCache;
 
-  public isReleaseCheckboxEnabled = false;
-  private selectedItems: Set<IssueTreeItem> = new Set();
-  private _onDidChangeCheckboxState = new vscode.EventEmitter<
-    vscode.TreeCheckboxChangeEvent<IssueTreeItem>
-  >();
+  constructor(public cache: Cache<Issue[]>) {}
 
-  readonly onDidChangeCheckboxState = this._onDidChangeCheckboxState.event;
-
-  private client: Sdk;
-  private register = (
-    command: string,
-    callback: Parameters<typeof register>[1],
-  ) => {
-    register(`${this.id}.${command}`, callback);
-  };
-  constructor(context: vscode.ExtensionContext) {
-    const config = vscode.workspace.getConfiguration(EXTENSION);
-    this.client = createClient(config.get<string>("linearApiKey"));
-    this.cache = new LinearIssuesCache(context, this.client);
-    const view = vscode.window.createTreeView(`${EXTENSION}.${this.id}`, {
-      treeDataProvider: this,
-      manageCheckboxStateManually: true,
-    });
-
-    view.onDidChangeCheckboxState((event) => {
-      event.items.forEach(([item, state]) => {
-        if (item instanceof IssueTreeItem) {
-          if (state === vscode.TreeItemCheckboxState.Checked) {
-            this.selectedItems.add(item);
-          } else {
-            this.selectedItems.delete(item);
-          }
-        }
-      });
-    });
-    this.initCommands();
-  }
-
-  private initCommands() {
-    this.register("open-issue", (item: IssueTreeItem) =>
-      openExternal(item.issue.url),
-    );
-    this.register("create-branch", (item: IssueTreeItem) => createBranch(item));
-    this.register("refresh", () => this.refresh());
-    this.register("send-preview", (item: PullRequestTreeItem) =>
-      sendPreview(item),
-    );
-    this.register("release-issues", () => this.releaseIssues());
-    this.register("open-pull-request", (item: PullRequestTreeItem) =>
-      openExternal(item.attachment.metadata.url),
-    );
-  }
-
-  getTreeItem(element: TreeItem) {
-    return element;
-  }
-
-  async getChildren(element?: TreeItem): Promise<TreeItem[]> {
-    const issues = await this.cache.getIssues();
-    if (!element) {
-      return AssigneeTreeItem.from(issues);
+  getTreeItem(item: TreeItem) {
+    if (
+      item.treeItem.contextValue === treeId(LINEAR_VIEW, "issue") &&
+      this.releaseCheckbox
+    ) {
+      item.treeItem.checkboxState = vscode.TreeItemCheckboxState.Unchecked;
     }
-    return element.getChildren(this);
+    return item.treeItem;
   }
 
-  refresh(): void {
-    this.cache.clear();
+  async getChildren(item?: TreeItem): Promise<TreeItem[]> {
+    const issues = await this.cache.get();
+    if (!item) {
+      return assigneeTreeItemFrom(issues);
+    }
+    return item.getChildren();
+  }
+
+  public async refresh() {
+    await this.cache.remove();
     this._onDidChangeTreeData.fire(undefined);
   }
-
-  async releaseIssues(): Promise<void> {
-    switch (this.isReleaseCheckboxEnabled) {
+  public async releaseIssues(selectedItems: Issue[]) {
+    switch (this.releaseCheckbox) {
       case true: {
-        releaseIssues(this.selectedItems);
+        await releaseIssues(selectedItems);
         break;
       }
     }
-    this.isReleaseCheckboxEnabled = !this.isReleaseCheckboxEnabled;
-    this.selectedItems.clear();
+    this.releaseCheckbox = !this.releaseCheckbox;
     this._onDidChangeTreeData.fire(undefined);
   }
 }
+
+export const linearView = () => {
+  const cmd = (cmd: string) => `${LINEAR_VIEW}.${cmd}`;
+  const selectedItems = new Set<Issue>();
+  const cache = linearIssuesCache();
+  const treeDataProvider = new LinearTreeDataProvider(cache);
+  const view = vscode.window.createTreeView(`${EXTENSION}.${LINEAR_VIEW}`, {
+    treeDataProvider,
+    manageCheckboxStateManually: true,
+  });
+  onViewCheckboxStateChange<TreeItem, IssueTreeItem>(
+    view,
+    (item) => selectedItems.add(item.issue),
+    (item) => selectedItems.delete(item.issue),
+    (item) => item.treeItem.contextValue === treeId(LINEAR_VIEW, "issue"),
+  );
+  register<IssueTreeItem>(cmd(`open-issue`), (item) => item.openIssue());
+  register<IssueTreeItem>(cmd("create-branch"), (item) => item.createBranch());
+  register(cmd("refresh"), () => treeDataProvider.refresh());
+  register(cmd("release-issues"), async () => {
+    await treeDataProvider.releaseIssues(Array.from(selectedItems));
+    selectedItems.clear();
+  });
+  register<PullRequestTreeItem>(cmd("send-preview"), (item) =>
+    item.sendPreview(),
+  );
+  register<PullRequestTreeItem>(cmd("open-pull-request"), (item) =>
+    item.openPullRequest(),
+  );
+};

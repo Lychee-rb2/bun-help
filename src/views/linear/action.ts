@@ -3,11 +3,10 @@ import { cli, findNextBranch, getConfig, openExternal } from "@/help";
 import { format } from "date-fns";
 import * as vscode from "vscode";
 import { z } from "zod";
-import type { IssueTreeItem } from "./issue-tree-item";
 import { buildCommentBody } from "./linear-body";
-import type { PullRequestTreeItem } from "./pull-request-tree-item";
+import type { Attachment, Issue } from "./type";
 
-export const sendPreview = async (item: PullRequestTreeItem) => {
+export const sendPreview = async (issue: Issue, attachment: Attachment) => {
   const config = getConfig();
   const client = createClient(config.get<string>("linearApiKey"));
 
@@ -24,12 +23,12 @@ export const sendPreview = async (item: PullRequestTreeItem) => {
 
   const body = buildCommentBody(
     mensions,
-    item.attachment.metadata.previewLinks,
+    attachment.metadata.previewLinks,
     config.get<string>("previewsCommentFooter"),
   );
 
   const answer = await vscode.window.showInformationMessage(
-    `Do you want to send preview comment to Linear issue ${item.issue.identifier}?`,
+    `Do you want to send preview comment to Linear issue ${issue.identifier}?`,
     {
       modal: true,
       detail: JSON.stringify(body.markdown),
@@ -38,7 +37,7 @@ export const sendPreview = async (item: PullRequestTreeItem) => {
   );
   if (!answer) return;
   const res = await client.createComment({
-    input: { issueId: item.issue.id, bodyData: body.linear },
+    input: { issueId: issue.id, bodyData: body.linear },
   });
   openExternal(res.commentCreate.comment.url);
   await vscode.window.showInformationMessage(
@@ -46,23 +45,24 @@ export const sendPreview = async (item: PullRequestTreeItem) => {
   );
 };
 
-export const releaseIssues = async (items: Set<IssueTreeItem>) => {
-  if (items.size === 0) return;
+export const releaseIssues = async (items: Issue[]) => {
+  if (items.length === 0) return;
   const content = [
     `# Release note: ${format(new Date(), "yyyy-MM-dd")}`,
-    [...items]
-      .map((i) => ({
-        title: i.issue.identifier + " " + i.issue.title,
-        url: i.issue.url,
-        prs: i.issue.attachments.nodes.map((a) => ({
-          title: a.metadata.title,
-          url: a.metadata.url,
+    items
+      .sort((a, b) => b.updatedAt - a.updatedAt)
+      .map(({ identifier, url, attachments, title }) => ({
+        title: `${identifier} ${title}`,
+        url: url,
+        prs: attachments.nodes.map(({ metadata: { title, url } }) => ({
+          title,
+          url,
         })),
       }))
-      .map((i) =>
+      .map(({ title, url, prs }) =>
         [
-          `## [${i.title}](${i.url})`,
-          i.prs.map((pr) => `- [${pr.title}](${pr.url})`).join("\n"),
+          `## [${title}](${url})`,
+          prs.map(({ title, url }) => `- [${title}](${url})`).join("\n"),
         ].join("\n"),
       )
       .join("\n"),
@@ -71,8 +71,8 @@ export const releaseIssues = async (items: Set<IssueTreeItem>) => {
   await vscode.window.showInformationMessage("已复制到剪贴板");
 };
 
-export const createBranch = async (item: IssueTreeItem) => {
-  const branchName = await findNextBranch(item.issue.branchName);
+export const createBranch = async (issue: Issue) => {
+  const branchName = await findNextBranch(issue.branchName);
   await cli(["git", "checkout", "main"]);
   await cli(["git", "pull"]);
   await cli(["git", "checkout", "-b", branchName]);

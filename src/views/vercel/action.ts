@@ -1,14 +1,13 @@
 import { cli } from "@/help";
 import * as vscode from "vscode";
-import type { ProjectBrancheTreeItem } from "./deployment-tree-item";
-import type { DeployHookTreeItem, ReleaseTreeItem } from "./release-tree-item";
+import type { DeployHook } from "./type";
 
-export const releaseProjects = async ({
-  label,
-  deployHooks,
-}: ReleaseTreeItem) => {
+export const releaseProjects = async (
+  branch: string,
+  deployHooks: (DeployHook & { projectName: string })[],
+) => {
   const answer = await vscode.window.showInformationMessage(
-    `Do you want to trigger ${label} branch of all projects?`,
+    `Do you want to trigger ${branch} branch of all projects?`,
     {
       modal: true,
       detail: deployHooks.map(({ projectName }) => projectName).join("\n"),
@@ -23,11 +22,11 @@ export const releaseProjects = async ({
   );
   if (res.every((i) => i.res.ok)) {
     await vscode.window.showInformationMessage(
-      `Trigger ${label} branch of all projects success`,
+      `Trigger ${branch} branch of all projects success`,
     );
   } else {
     await vscode.window.showInformationMessage(
-      `Some trigger ${label} branch of projects fail`,
+      `Some trigger ${branch} branch of projects fail`,
       {
         modal: true,
         detail: res
@@ -40,9 +39,10 @@ export const releaseProjects = async ({
     );
   }
 };
-export const releaseProject = async ({
-  deployHook: { ref, projectName, url },
-}: DeployHookTreeItem) => {
+export const releaseProject = async (
+  { ref, url }: DeployHook,
+  projectName: string,
+) => {
   const answer = await vscode.window.showInformationMessage(
     `Do you want to trigger ${ref} of ${projectName}?`,
     "Yes",
@@ -60,9 +60,9 @@ export const releaseProject = async ({
   }
 };
 
-export const checkoutBranch = async (item: ProjectBrancheTreeItem) => {
-  await cli(["git", "checkout", item.branch]);
+export const checkoutBranch = async (branch: string) => {
+  await cli(["git", "checkout", branch]);
   await vscode.window.showInformationMessage(
-    `Checkout branch ${item.branch} success`,
+    `Checkout branch ${branch} success`,
   );
 };
