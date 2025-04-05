@@ -118,14 +118,14 @@ export const projectDeploymentsTreeItem = (
     getChildren: async () => {
       const groupByBranch = await cache.get();
       return Object.entries(groupByBranch).map(([branch, deployments]) =>
-        projectBrancheTreeItem(branch, project, deployments),
+        projectBranchTreeItem(branch, project, deployments),
       );
     },
     refreshProject: () => cache.remove(),
   };
 };
 
-export const projectBrancheTreeItem = (
+export const projectBranchTreeItem = (
   branch: string,
   project: Project,
   deployments: Deployment[],
@@ -146,7 +146,7 @@ export const projectBrancheTreeItem = (
     openPreview: () => {
       const url = deployments.at(0)?.meta?.branchAlias;
       if (url) {
-        openExternal("https://" + url);
+        await openExternal("https://" + url);
       }
     },
     checkoutBranch: () => checkoutBranch(branch),

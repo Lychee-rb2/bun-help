@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
 
-export const openExternal = (url?: string | null) => {
+export const openExternal = async (url?: string | null) => {
   if (url) {
-    vscode.env.openExternal(vscode.Uri.parse(url));
+    await vscode.env.openExternal(vscode.Uri.parse(url));
   }
 };
 

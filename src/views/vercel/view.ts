@@ -6,7 +6,7 @@ import { vercelProjectCache } from "./cache";
 import {
   deployHookTreeItem,
   deploymentsTreeItem,
-  projectBrancheTreeItem,
+  projectBranchTreeItem,
   projectDeploymentsTreeItem,
   projectDeploymentTreeItem,
   releaseTreeItem,
@@ -16,7 +16,7 @@ import type { Project } from "./type";
 
 type DeploymentsTreeItem = ReturnType<typeof deploymentsTreeItem>;
 type ProjectDeploymentsTreeItem = ReturnType<typeof projectDeploymentsTreeItem>;
-type ProjectBrancheTreeItem = ReturnType<typeof projectBrancheTreeItem>;
+type ProjectBranchTreeItem = ReturnType<typeof projectBranchTreeItem>;
 type ProjectDeploymentTreeItem = ReturnType<typeof projectDeploymentTreeItem>;
 type ReleaseTreeItem = ReturnType<typeof releaseTreeItem>;
 type DeployHookTreeItem = ReturnType<typeof deployHookTreeItem>;
@@ -24,7 +24,7 @@ type DeployHookTreeItem = ReturnType<typeof deployHookTreeItem>;
 type TreeItem =
   | DeploymentsTreeItem
   | ProjectDeploymentsTreeItem
-  | ProjectBrancheTreeItem
+  | ProjectBranchTreeItem
   | ProjectDeploymentTreeItem
   | ReleaseTreeItem
   | DeployHookTreeItem;
@@ -71,7 +71,7 @@ export const vercelView = () => {
   register<DeployHookTreeItem>(cmd("release-project"), (item) =>
     item.releaseProject(),
   );
-  register<ProjectBrancheTreeItem>(cmd("open-preview"), (item) =>
+  register<ProjectBranchTreeItem>(cmd("open-preview"), (item) =>
     item.openPreview(),
   );
   register<ProjectDeploymentTreeItem>(cmd("open-inspector"), (item) =>
@@ -80,7 +80,7 @@ export const vercelView = () => {
   register<ProjectDeploymentsTreeItem>(cmd("refresh-project"), (item) =>
     item.refreshProject(),
   );
-  register<ProjectBrancheTreeItem>(cmd("check-branch"), (item) =>
+  register<ProjectBranchTreeItem>(cmd("check-branch"), (item) =>
     item.checkoutBranch(),
   );
 };

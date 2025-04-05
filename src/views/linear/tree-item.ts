@@ -3,8 +3,8 @@ import * as vscode from "vscode";
 import { createBranch, sendPreview } from "./action";
 import type { Attachment, Issue } from "./type";
 
-export const assigneeTreeItemFrom = (issues: Issue[]) => {
-  const assignees = Object.entries(
+export const assigneeTreeItemFrom = (issues: Issue[]) =>
+  Object.entries(
     issues.reduce<Record<string, { issues: Issue[] }>>((acc, issue) => {
       const name =
         (issue.assignee?.isMe ? "Me" : issue.assignee?.displayName) || "Others";
@@ -17,8 +17,6 @@ export const assigneeTreeItemFrom = (issues: Issue[]) => {
       labelA === "Me" ? -1 : labelB === "Me" ? 1 : 0,
     )
     .map(([label, { issues }]) => assigneeTreeItem(label, issues));
-  return assignees;
-};
 export const assigneeTreeItem = (label: string, issues: Issue[]) => {
   const treeItem = new vscode.TreeItem(
     label,

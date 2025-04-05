@@ -3,7 +3,7 @@ import { EXTENSION } from "./help";
 import { linearView } from "./views/linear/view";
 import { vercelView } from "./views/vercel/view";
 
-export function activate(context: vscode.ExtensionContext) {
+export function activate(_: vscode.ExtensionContext) {
   // Get configuration
   const config = vscode.workspace.getConfiguration(EXTENSION);
 

@@ -17,12 +17,12 @@ export const sendPreview = async (issue: Issue, attachment: Attachment) => {
       ?.filter((i) => i.success)
       ?.map((i) => i.data) || [];
 
-  const mensions = await client
+  const mentions = await client
     .users({ filter: { email: { in: emails } } })
     .then((res) => res.users.nodes.map((i) => ({ id: i.id, label: i.name })));
 
   const body = buildCommentBody(
-    mensions,
+    mentions,
     attachment.metadata.previewLinks,
     config.get<string>("previewsCommentFooter"),
   );
@@ -39,7 +39,7 @@ export const sendPreview = async (issue: Issue, attachment: Attachment) => {
   const res = await client.createComment({
     input: { issueId: issue.id, bodyData: body.linear },
   });
-  openExternal(res.commentCreate.comment.url);
+  await openExternal(res.commentCreate.comment.url);
   await vscode.window.showInformationMessage(
     `Send preview to ${emails.join(",")} success`,
   );
