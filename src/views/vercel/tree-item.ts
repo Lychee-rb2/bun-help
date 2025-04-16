@@ -143,7 +143,7 @@ export const projectBranchTreeItem = (
       deployments.map((deployment) =>
         projectDeploymentTreeItem(project, deployment),
       ),
-    openPreview: () => {
+    openPreview: async () => {
       const url = deployments.at(0)?.meta?.branchAlias;
       if (url) {
         await openExternal("https://" + url);
